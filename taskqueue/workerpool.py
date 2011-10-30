@@ -4,7 +4,6 @@ import pika
 import pkg_resources
 
 from time import sleep
-from logging.handlers import SysLogHandler
 from multiprocessing import Process
 from taskqueue.daemonlib import Daemon
 

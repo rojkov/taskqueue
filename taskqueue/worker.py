@@ -27,9 +27,12 @@ class BaseWorker(object):
         self.channel.start_consuming()
 
     def handle_task(self, channel, method, header, body):
-        raise NotImplemented
+        """Handle task."""
+        raise NotImplementedError
 
     def cleanup(self, signum, frame):
+        """Cleanup worker process."""
+
         LOG.debug("target cleanup")
         self.channel.stop_consuming()
         self.connection.close()

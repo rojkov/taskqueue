@@ -1,11 +1,11 @@
+"""
+Taskqueue dispatcher daemon
+"""
+
 import sys
-import daemon
 import logging
-import socket
-import signal
 import pika
 
-from time import sleep
 from taskqueue.daemonlib import Daemon
 
 LOG = logging.getLogger(__name__)
@@ -27,6 +27,7 @@ def handle_delivery(channel, method, header, body):
     channel.basic_ack(method.delivery_tag)
 
 class Application(Daemon):
+    """Dispatcher daemon"""
 
     pidfile = "/var/run/dispatcher.pid"
 
@@ -34,6 +35,7 @@ class Application(Daemon):
         """Initialize application."""
 
         self.channel = None
+        self.connection = None
         # TODO: set config in base class
         self.config = config
 

@@ -1,5 +1,4 @@
 import logging, logging.config
-import socket
 import daemon
 import signal
 import sys
@@ -12,6 +11,8 @@ from optparse import OptionParser
 LOG = logging.getLogger(__name__)
 
 def parse_cmdline(defaults):
+    """Parse commandline options."""
+
     parser = OptionParser()
     parser.add_option("-f", "--foreground", dest="foreground",
                       action="store_true", default=False,
@@ -71,7 +72,11 @@ class Daemon(object):
 
     def cleanup(self, signum, frame):
         """Abstract cleanup."""
-        raise NotImplemented
+        raise NotImplementedError
+
+    def run(self):
+        """Abstract run."""
+        raise NotImplementedError
 
     @classmethod
     def main(cls):
