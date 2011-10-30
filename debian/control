@@ -5,8 +5,20 @@ Maintainer: Dmitry Rozhkov <dmitry.rojkov@gmail.com>
 Build-Depends: debhelper (>= 7), python-support
 Standards-Version: 3.8.1
 
-Package: python-taskqueue
+Package: python-taskqueue-common
 Architecture: all
 Depends: ${python:Depends}, ${misc:Depends}
-Description: Lightweight AMQP-based task queue
+Description: Lightweight AMQP-based task queue. Common files
+ python-taskqueue provides lightweight AMQP-based task queue
+
+Package: python-taskqueue-dispatcher
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}, python-taskqueue-common
+Description: Lightweight AMQP-based task queue dispatcher
+ python-taskqueue provides lightweight AMQP-based task queue
+
+Package: python-taskqueue-workerpool
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}, python-taskqueue-common
+Description: Lightweight AMQP-based task queue workerpool
  python-taskqueue provides lightweight AMQP-based task queue

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+PID=/var/run/taskqueue-workerpool.pid
+
+case "$1" in
+    start)
+        echo "Starting taskqueue worker pool"
+        /usr/bin/worker -p $PID
+        ;;
+    stop)
+        echo "Stopping taskqueue worker pool"
+        kill `cat $PID`
+        ;;
+    *)
+        echo "Usage: /etc/init.d/python-taskqueue-workerpool {start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0

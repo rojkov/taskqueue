@@ -1,0 +1,20 @@
+#!/bin/bash
+
+PID=/var/run/taskqueue-dispatcher.pid
+
+case "$1" in
+    start)
+        echo "Starting taskqueue dispatcher"
+        /usr/bin/dispatcher -p $PID
+        ;;
+    stop)
+        echo "Stopping taskqueue dispatcher"
+        kill `cat $PID`
+        ;;
+    *)
+        echo "Usage: /etc/init.d/python-taskqueue-dispatcher {start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0
