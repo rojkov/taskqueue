@@ -1,0 +1,5 @@
+taskqueue (0.0.1-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Dmitry Rozhkov <dmitry.rojkov@gmail.com>  Sun, 30 Oct 2011 18:40:00 +0200

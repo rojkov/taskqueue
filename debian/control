@@ -1,0 +1,12 @@
+Source: taskqueue
+Section: python
+Priority: optional
+Maintainer: Dmitry Rozhkov <dmitry.rojkov@gmail.com>
+Build-Depends: debhelper (>= 7), python-support
+Standards-Version: 3.8.1
+
+Package: python-taskqueue
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}
+Description: Lightweight AMQP-based task queue
+ python-taskqueue provides lightweight AMQP-based task queue
