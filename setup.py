@@ -23,12 +23,14 @@ setup(
     entry_points={
         'console_scripts':
             [
-                'dispatcher = taskqueue.dispatcher:main',
-                'worker = taskqueue.worker:main'
+                'dispatcher = taskqueue.dispatcher:Application.main',
+                'worker = taskqueue.workerpool:Application.main'
             ],
         'worker.plugins':
             [
-                'first = taskqueue.plugins.first:make_plugin'
+                'first = taskqueue.plugins.first:Worker.factory',
+                'second = taskqueue.plugins.second:Worker.factory',
+                'third = taskqueue.plugins.third:Worker.factory'
             ]
     },
 )
