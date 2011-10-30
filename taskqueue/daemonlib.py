@@ -1,15 +1,70 @@
-import logging
+import logging, logging.config
 import socket
 import daemon
 import signal
 import sys
+import os
+import fcntl
 
-from logging.handlers import SysLogHandler
 from ConfigParser import SafeConfigParser as ConfigParser
+from optparse import OptionParser
 
 LOG = logging.getLogger(__name__)
 
+def parse_cmdline(defaults):
+    parser = OptionParser()
+    parser.add_option("-f", "--foreground", dest="foreground",
+                      action="store_true", default=False,
+                      help="don't deamonize")
+    parser.add_option("-c", "--config", dest="config",
+                      default="/etc/taskqueue/config.ini",
+                      help="path to config file")
+    parser.add_option("-p", "--pid-file", dest="pidfile",
+                      default=defaults["pidfile"])
+
+    (options, args) = parser.parse_args()
+    return options
+
+class PidFile(object):
+    """Context manager that locks a pid file.
+
+    Implemented as class not generator because daemon.py is
+    calling .__exit__() with no parameters instead of the None, None, None
+    specified by PEP-343.
+    copy&pasted from
+    http://code.activestate.com/recipes/577911-context-manager-for-a-daemon-pid-file/
+    """
+    # pylint: disable=R0903
+
+    def __init__(self, path):
+        self.path = path
+        self.pidfile = None
+
+    def __enter__(self):
+        self.pidfile = open(self.path, "a+")
+        try:
+            fcntl.flock(self.pidfile.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except IOError:
+            raise SystemExit("Already running according to " + self.path)
+        self.pidfile.seek(0)
+        self.pidfile.truncate()
+        self.pidfile.write(str(os.getpid()))
+        self.pidfile.flush()
+        self.pidfile.seek(0)
+        return self.pidfile
+
+    def __exit__(self, exc_type=None, exc_value=None, exc_tb=None):
+        try:
+            self.pidfile.close()
+        except IOError as err:
+            # ok if file was just closed elsewhere
+            if err.errno != 9:
+                raise
+        os.remove(self.path)
+
 class Daemon(object):
+
+    pidfile = "/var/run/python-daemon.pid"
 
     def __init__(self, config):
         self.config = config
@@ -22,30 +77,24 @@ class Daemon(object):
     def main(cls):
         """Dispatcher entry point."""
 
+        options = parse_cmdline({"pidfile": cls.pidfile})
+
         # configure logging
-        rootlogger = logging.getLogger()
-        rootlogger.setLevel(logging.DEBUG)
-        sh = SysLogHandler(address='/dev/log',
-                           facility=SysLogHandler.LOG_DAEMON,
-                           socktype=socket.SOCK_STREAM)
-        sh.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(name)s:%(levelname)s:%(message)s')
-        sh.setFormatter(formatter)
-        rootlogger.addHandler(sh)
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
-        ch.setFormatter(formatter)
-        rootlogger.addHandler(ch)
+        logging.config.fileConfig(options.config,
+                                  disable_existing_loggers=False)
 
         config = ConfigParser()
-        config.read('config.ini')
+        config.read(options.config)
 
         daemon_obj = cls(config)
 
         context = daemon.DaemonContext()
-        context.detach_process = False # for development purposes
-        context.stdout = sys.stdout
-        context.stderr = sys.stdout
+
+        context.pidfile = PidFile(options.pidfile)
+        if options.foreground:
+            context.detach_process = False
+            context.stdout = sys.stdout
+            context.stderr = sys.stdout
 
         context.signal_map = {
             signal.SIGTERM: daemon_obj.cleanup,

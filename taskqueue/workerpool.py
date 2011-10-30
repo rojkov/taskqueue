@@ -12,6 +12,8 @@ LOG = logging.getLogger(__name__)
 
 class Application(Daemon):
 
+    pidfile = "/var/run/workerpool.pid"
+
     def __init__(self, config):
         """Initialize application."""
 

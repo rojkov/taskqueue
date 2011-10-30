@@ -6,7 +6,6 @@ import signal
 import pika
 
 from time import sleep
-from logging.handlers import SysLogHandler
 from taskqueue.daemonlib import Daemon
 
 LOG = logging.getLogger(__name__)
@@ -28,6 +27,8 @@ def handle_delivery(channel, method, header, body):
     channel.basic_ack(method.delivery_tag)
 
 class Application(Daemon):
+
+    pidfile = "/var/run/dispatcher.pid"
 
     def __init__(self, config):
         """Initialize application."""
