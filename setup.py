@@ -14,7 +14,7 @@ setup(
     keywords = "task queue",
     url = "http://packages.python.org/an_example_pypi_project",
     packages=['taskqueue', 'taskqueue.plugins'],
-    long_description=read('README'),
+    long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",

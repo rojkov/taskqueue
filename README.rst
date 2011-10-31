@@ -46,7 +46,7 @@ The worker processes of the type `worker1` listen to the queue `worker_worker1`
 and the worker processes of the type `worker2` listen to the queue
 `worker_worker2`.
 
-If a worker process gets crashed then the worker restarts it.
+If a worker process gets crashed the worker restarts it.
 
 The following code in the package `extpackage.workerext` defines a new worker
 plugin::
@@ -55,9 +55,9 @@ plugin::
 
     class Worker(BaseWorker):
         def handle_task(self, channel, method, header, body):
-            # define meet here
+            # define meat here
             do_something_heavy()
-            # report back that the task is done
+            # report back that the task has been done
             channel.basic_ack(method.delivery_tag)
 
 The plugin needs to be registered as a pluggable resource in the egg's
