@@ -54,11 +54,9 @@ plugin::
     from taskqueue.worker import BaseWorker
 
     class Worker(BaseWorker):
-        def handle_task(self, channel, method, header, body):
-            # define meat here
-            do_something_heavy()
-            # report back that the task has been done
-            channel.basic_ack(method.delivery_tag)
+        def handle_task(self, body):
+            # put meat here
+            return do_something_heavy(body)
 
 The plugin needs to be registered as a pluggable resource in the egg's
 `setup.py`::
