@@ -58,6 +58,9 @@ plugin::
             # put meat here
             return do_something_heavy(body)
 
+The return value of Worker.handle_task() is sent back to AMQP with the routing
+key `results`.
+
 The plugin needs to be registered as a pluggable resource in the egg's
 `setup.py`::
 
