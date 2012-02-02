@@ -4,6 +4,9 @@ import signal
 
 LOG = logging.getLogger(__name__)
 
+CFG_KEY_RES_ROUTING = "results_routing_key"
+CFG_DEFAULT_RES_ROUTING = "results"
+
 class BaseWorker(object):
 
     @classmethod
@@ -14,6 +17,7 @@ class BaseWorker(object):
     def __init__(self):
         self.channel = None
         self.connection = None
+        self.results_routing_key=CFG_DEFAULT_RES_ROUTING
 
     def __call__(self, props, conn_params, queue):
         self.connection = pika.BlockingConnection(conn_params)
@@ -24,6 +28,8 @@ class BaseWorker(object):
         self.channel.basic_consume(self.handle_delivery, queue=queue)
         signal.signal(signal.SIGTERM, self.cleanup)
         LOG.debug("created new process with props %r" % props)
+        if CFG_KEY_RES_ROUTING in props.keys():
+            self.results_routing_key = props[CFG_KEY_RES_ROUTING]
         self.channel.start_consuming()
 
     def handle_task(self, channel, method, header, body):
@@ -35,7 +41,7 @@ class BaseWorker(object):
         LOG.debug("Header: %r" % header)
         result = self.handle_task(body)
         channel.basic_publish(exchange='',
-                              routing_key='results',
+                              routing_key=self.results_routing_key,
                               body=result,
                               properties=pika.BasicProperties(
                                   delivery_mode=2

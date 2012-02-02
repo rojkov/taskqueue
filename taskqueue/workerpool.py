@@ -55,7 +55,7 @@ class Application(Daemon):
                 max_workers = self.config.getint(section, 'workers')
                 for i in range(0, max_workers):
                     self.create_worker(worker_type,
-                                       self.config.items(section))
+                                       dict(self.config.items(section)))
 
         self.monitor()
 
