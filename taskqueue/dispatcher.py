@@ -5,6 +5,7 @@ Taskqueue dispatcher daemon
 import sys
 import logging
 import pika
+import json
 
 from taskqueue.daemonlib import Daemon
 
@@ -17,7 +18,9 @@ def handle_delivery(channel, method, header, body):
     LOG.debug("Method: %r" % method)
     LOG.debug("Header: %r" % header)
     LOG.debug("Body: %r" % body)
-    worker, msg = body.split(" ", 1)
+    workitem = json.loads(body)
+    worker = workitem["fields"]["params"]["worker_type"]
+    msg = body
 
     channel.basic_publish(exchange='',
                           routing_key='worker_%s' % worker,

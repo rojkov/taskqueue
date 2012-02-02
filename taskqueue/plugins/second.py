@@ -6,7 +6,7 @@ LOG = logging.getLogger(__name__)
 
 class Worker(BaseWorker):
 
-    def handle_task(self, body):
-        LOG.debug("Body: %r" % body)
-        return "done"
+    def handle_task(self, workitem):
+        LOG.debug("Body: %r" % workitem)
+        return workitem
 

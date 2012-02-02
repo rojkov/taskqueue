@@ -1,6 +1,7 @@
 import logging
 import pika
 import signal
+import json
 
 LOG = logging.getLogger(__name__)
 
@@ -32,14 +33,15 @@ class BaseWorker(object):
             self.results_routing_key = props[CFG_KEY_RES_ROUTING]
         self.channel.start_consuming()
 
-    def handle_task(self, channel, method, header, body):
+    def handle_task(self, workitem):
         """Handle task."""
         raise NotImplementedError
 
     def handle_delivery(self, channel, method, header, body):
         LOG.debug("Method: %r" % method)
         LOG.debug("Header: %r" % header)
-        result = self.handle_task(body)
+        workitem = json.loads(body)
+        result = json.dumps(self.handle_task(workitem))
         channel.basic_publish(exchange='',
                               routing_key=self.results_routing_key,
                               body=result,

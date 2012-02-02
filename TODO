@@ -1,0 +1,2 @@
+1. Currently the only workitem format supported by the taskqueue is Ruote's
+   JSON-encoded workitems. Add support for other formats.
