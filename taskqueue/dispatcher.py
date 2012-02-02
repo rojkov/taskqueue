@@ -8,6 +8,8 @@ import pika
 
 from taskqueue.daemonlib import Daemon
 
+from ConfigParser import NoSectionError
+
 LOG = logging.getLogger(__name__)
 
 def handle_delivery(channel, method, header, body):
@@ -38,14 +40,27 @@ class Application(Daemon):
         self.connection = None
         # TODO: set config in base class
         self.config = config
+        try:
+            amqp_host   = config.get("amqp", "host")
+            amqp_user   = config.get("amqp", "user")
+            amqp_passwd = config.get("amqp", "passwd")
+            amqp_vhost  = config.get("amqp", "vhost")
+            credentials = pika.PlainCredentials(amqp_user, amqp_passwd)
+            self.amqp_params = pika.ConnectionParameters(
+                credentials=credentials,
+                host=amqp_host,
+                virtual_host=amqp_vhost)
+            LOG.debug("amqp params read from config")
+        except NoSectionError:
+            self.amqp_params = pika.ConnectionParameters(host="localhost")
 
     def run(self):
         """Event cycle."""
 
         LOG.debug("run!")
-        parameters = pika.ConnectionParameters(host="localhost")
         LOG.debug("create connection")
-        self.connection = pika.BlockingConnection(parameters)
+        self.connection = pika.BlockingConnection(self.amqp_params)
+        LOG.debug("dispatcher connected")
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue="taskqueue", durable=True,
                                    exclusive=False, auto_delete=False)
