@@ -72,10 +72,11 @@ class Daemon(object):
     def __init__(self, config):
         self.config = config
         try:
-            amqp_host   = config.get("amqp", "host")
-            amqp_user   = config.get("amqp", "user")
-            amqp_passwd = config.get("amqp", "passwd")
-            amqp_vhost  = config.get("amqp", "vhost")
+            amqp_items  = dict(config.items("amqp"))
+            amqp_host   = amqp_items.get("host", "localhost")
+            amqp_user   = amqp_items.get("user", "guest")
+            amqp_passwd = amqp_items.get("passwd", "guest")
+            amqp_vhost  = amqp_items.get("vhost", "/")
             credentials = pika.PlainCredentials(amqp_user, amqp_passwd)
             self.amqp_params = pika.ConnectionParameters(
                 credentials=credentials,
