@@ -38,21 +38,7 @@ class Application(Daemon):
 
         self.channel = None
         self.connection = None
-        # TODO: set config in base class
-        self.config = config
-        try:
-            amqp_host   = config.get("amqp", "host")
-            amqp_user   = config.get("amqp", "user")
-            amqp_passwd = config.get("amqp", "passwd")
-            amqp_vhost  = config.get("amqp", "vhost")
-            credentials = pika.PlainCredentials(amqp_user, amqp_passwd)
-            self.amqp_params = pika.ConnectionParameters(
-                credentials=credentials,
-                host=amqp_host,
-                virtual_host=amqp_vhost)
-            LOG.debug("amqp params read from config")
-        except NoSectionError:
-            self.amqp_params = pika.ConnectionParameters(host="localhost")
+        super(Application, self).__init__(config)
 
     def run(self):
         """Event cycle."""

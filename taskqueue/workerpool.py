@@ -1,13 +1,10 @@
 import sys
 import logging
-import pika
 import pkg_resources
 
 from time import sleep
 from multiprocessing import Process
 from taskqueue.daemonlib import Daemon
-
-from ConfigParser import NoSectionError
 
 LOG = logging.getLogger(__name__)
 
@@ -20,20 +17,7 @@ class Application(Daemon):
 
         self.processes = []
         self.plugins = {}
-        # TODO: set config in base class
-        self.config = config
-        try:
-            amqp_host   = config.get("amqp", "host")
-            amqp_user   = config.get("amqp", "user")
-            amqp_passwd = config.get("amqp", "passwd")
-            amqp_vhost  = config.get("amqp", "vhost")
-            credentials = pika.PlainCredentials(amqp_user, amqp_passwd)
-            self.amqp_params = pika.ConnectionParameters(
-                credentials=credentials,
-                host=amqp_host,
-                virtual_host=amqp_vhost)
-        except NoSectionError:
-            self.amqp_params = pika.ConnectionParameters(host="localhost")
+        super(Application, self).__init__(config)
 
     def create_worker(self, worker_type, props):
         LOG.debug("creating new worker of type %r" % worker_type)

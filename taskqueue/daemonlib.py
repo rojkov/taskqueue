@@ -4,8 +4,10 @@ import signal
 import sys
 import os
 import fcntl
+import pika
 
-from ConfigParser import SafeConfigParser as ConfigParser
+from ConfigParser import SafeConfigParser as ConfigParser, NoSectionError
+
 from optparse import OptionParser
 
 LOG = logging.getLogger(__name__)
@@ -69,6 +71,18 @@ class Daemon(object):
 
     def __init__(self, config):
         self.config = config
+        try:
+            amqp_host   = config.get("amqp", "host")
+            amqp_user   = config.get("amqp", "user")
+            amqp_passwd = config.get("amqp", "passwd")
+            amqp_vhost  = config.get("amqp", "vhost")
+            credentials = pika.PlainCredentials(amqp_user, amqp_passwd)
+            self.amqp_params = pika.ConnectionParameters(
+                credentials=credentials,
+                host=amqp_host,
+                virtual_host=amqp_vhost)
+        except NoSectionError:
+            self.amqp_params = pika.ConnectionParameters(host="localhost")
 
     def cleanup(self, signum, frame):
         """Abstract cleanup."""
