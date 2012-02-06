@@ -6,14 +6,26 @@ import pika
 process = """
 Ruote.process_definition do
     fake1 :fkey1 => 'aaa'
-    hardworker :worker_type => 'first'
+    hardworker :worker_type => 'simplebuilder'
     fake1 :fkey1 => 'bbb'
+end
+"""
+
+TODO_process = """
+Ruote.process_definition do
+    make_tmp_repo_branch # create request branch
+    hardworker :worker_type => 'src_downloader' # download sources from Git and dput to request branch
+    hardworker :worker_type => 'simplebuilder' # get source to local drive, build, dput
+    merge_tmp_branch_to_master # merge built binaries to master branch
 end
 """
 
 pdef = {
     "definition": process,
-    "fields": {"f1_key": "f1_value"}
+    "fields":
+        {
+            "pkg_path": "/home/rozhkov/tmp/taskqueue-0.0.1"
+        }
 }
 
 msg = json.dumps(pdef)

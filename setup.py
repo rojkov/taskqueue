@@ -30,6 +30,7 @@ setup(
             [
                 'first = taskqueue.plugins.first:Worker.factory',
                 'second = taskqueue.plugins.second:Worker.factory',
+                'simplebuilder = taskqueue.plugins.simplebuilder:Worker.factory',
                 'third = taskqueue.plugins.third:Worker.factory'
             ]
     },
