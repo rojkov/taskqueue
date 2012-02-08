@@ -41,10 +41,36 @@ class FakeParticipant
     end
 end
 
+class PythonParticipant
+    include Ruote::LocalParticipant
+
+    def consume(workitem)
+        wi_str = workitem.as_json
+        out_wi_str = ""
+        IO.popen("pyparticipant", 'w+') do |subprocess|
+            subprocess.write(wi_str)
+            subprocess.close_write()
+            subprocess.read.split("\n").each do |line|
+                wi_line = line[/^~~~WORKITEM~~~(.*)$/, 1]
+                if wi_line then
+                    out_wi_str += ' ' + wi_line
+                end
+            end
+        end
+        new_wi = Ruote::Workitem.from_json(out_wi_str)
+        reply_to_engine(new_wi)
+    rescue
+        puts "problem occured: " + $!
+    end
+
+end
+
 $engine.register_participant :fake1, FakeParticipant
+$engine.register_participant :pyfake, PythonParticipant
 $engine.register_participant :hardworker, RuoteAMQP::ParticipantProxy, :queue => 'taskqueue'
 
 pdef = Ruote.process_definition do
+    pyfake
     fake1
 end
 
