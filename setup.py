@@ -31,6 +31,7 @@ setup(
                 'first = taskqueue.plugins.first:Worker.factory',
                 'second = taskqueue.plugins.second:Worker.factory',
                 'simplebuilder = taskqueue.plugins.simplebuilder:Worker.factory',
+                'simpledownloader = taskqueue.plugins.simpledownloader:Worker.factory',
                 'third = taskqueue.plugins.third:Worker.factory'
             ]
     },

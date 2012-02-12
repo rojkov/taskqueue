@@ -3,14 +3,6 @@
 import json
 import pika
 
-process = """
-Ruote.process_definition do
-    fake1 :fkey1 => 'aaa'
-    hardworker :worker_type => 'simplebuilder'
-    fake1 :fkey1 => 'bbb'
-end
-"""
-
 TODO_process = """
 Ruote.process_definition do
     make_tmp_repo_branch # create request branch
@@ -20,11 +12,24 @@ Ruote.process_definition do
 end
 """
 
+process = """
+Ruote.process_definition do
+    fake1 :fkey1 => 'aaa'
+    python :name => 'branch_repo'
+    hardworker :worker_type => 'simpledownloader'
+    hardworker :worker_type => 'simplebuilder'
+    fake1 :fkey1 => 'bbb'
+end
+"""
+
 pdef = {
     "definition": process,
     "fields":
         {
-            "pkg_path": "/home/rozhkov/tmp/taskqueue-0.0.1"
+            "user": "vasya",
+            "repo": "test_repo",
+            "pkgname": "python-riak",
+            "workdir": "/home/rozhkov/tmp"
         }
 }
 
