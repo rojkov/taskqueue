@@ -38,12 +38,11 @@ class Application(Daemon):
             worker_type = entrypoint.name
             LOG.info("register plugin %r" % worker_type)
             try:
-                plugin = entrypoint.load()
+                self.plugins[worker_type] = entrypoint.load()
             except ImportError:
                 LOG.info("worker of type %r not installed" % worker_type)
                 continue
 
-            self.plugins[worker_type] = plugin
             workers_attr = self.config.get(worker_type, 'workers')
             try:
                 int(workers_attr)
