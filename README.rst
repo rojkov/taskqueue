@@ -90,7 +90,8 @@ Unpack the tarball, then::
     $ dpkg-buildpackage -rfakeroot
 
 The commands above will produce three packages: `python-taskqueue-common`,
-`python-taskqueue-dispatcher` and `python-taskqueue-workerpool`.
+`python-taskqueue-dispatcher` and `python-taskqueue-workerpool`. Install the
+packages.
 
 Update AMQP settings in the section `amqp` of the file
 `/etc/taskqueue/config.ini`.
