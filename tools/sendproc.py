@@ -14,11 +14,16 @@ end
 
 process = """
 Ruote.process_definition do
-    fake1 :fkey1 => 'aaa'
-    python :name => 'branch_repo'
-    hardworker :worker_type => 'simpledownloader'
-    hardworker :worker_type => 'simplebuilder'
-    fake1 :fkey1 => 'bbb'
+    sequence :on_error => 'error_handler' do
+        fake1 :fkey1 => 'aaa'
+        python :name => 'branch_repo'
+        hardworker :worker_type => 'simpledownloader'
+        hardworker :worker_type => 'simplebuilder'
+        fake1 :fkey1 => 'bbb'
+    end
+    define 'error_handler' do
+        fake1 :oops => 'oops2'
+    end
 end
 """
 
