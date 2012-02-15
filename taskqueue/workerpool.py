@@ -74,7 +74,7 @@ class Application(Daemon):
                     self.create_worker(worker_type, props)
 
     def cleanup(self, signum, frame):
-        """Handler for terminationsignals."""
+        """Handler for termination signals."""
 
         LOG.debug("cleanup")
         for _, proc, _ in self.processes:
