@@ -52,6 +52,10 @@ class Application(Daemon):
                 int(workers_attr)
                 sections = [worker_type]
             except ValueError:
+                # in case more granular settings are required for a specific
+                # worker instance:
+                #  [<worker_type>_<instance_name>]
+                #  user: bifh1
                 sections = ["%s_%s" % (worker_type, sect.strip()) for sect in
                             self.config.get(worker_type, 'workers').split(",")]
             for section in sections:
