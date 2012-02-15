@@ -2,6 +2,7 @@ import logging
 import pika
 import signal
 import json
+import traceback
 
 LOG = logging.getLogger(__name__)
 
@@ -41,10 +42,15 @@ class BaseWorker(object):
         LOG.debug("Method: %r" % method)
         LOG.debug("Header: %r" % header)
         workitem = json.loads(body)
-        result = json.dumps(self.handle_task(workitem))
+        try:
+            wi_out = self.handle_task(workitem)
+        except Exception as err:
+            wi_out = workitem
+            wi_out["error"] = str(err)
+            wi_out["trace"] = traceback.format_exc()
         channel.basic_publish(exchange='',
                               routing_key=self.results_routing_key,
-                              body=result,
+                              body=json.dumps(wi_out),
                               properties=pika.BasicProperties(
                                   delivery_mode=2
                               ))
