@@ -25,6 +25,12 @@ for the following config::
     [DEFAULT]
     workers: 1
 
+    [amqp]
+    host: localhost
+    user: wfworker
+    passwd: wfworker
+    vhost: /wfworker
+
     ; Workers
     [worker1]
     workers: 3
