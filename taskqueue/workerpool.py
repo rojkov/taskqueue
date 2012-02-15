@@ -43,6 +43,10 @@ class Application(Daemon):
                 LOG.info("worker of type %r not installed" % worker_type)
                 continue
 
+            # use settings from DEFAULT for unconfigured worker plugins
+            if not self.config.has_section(worker_type):
+                self.config.add_section(worker_type)
+
             workers_attr = self.config.get(worker_type, 'workers')
             try:
                 int(workers_attr)
