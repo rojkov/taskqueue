@@ -9,8 +9,6 @@ import json
 
 from taskqueue.daemonlib import Daemon
 
-from ConfigParser import NoSectionError
-
 LOG = logging.getLogger(__name__)
 
 def handle_delivery(channel, method, header, body):
