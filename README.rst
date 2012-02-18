@@ -1,22 +1,29 @@
-Simple distributed task queue.
+Taskqueue is a simple queuing service dividing work among networked machines.
 
 Features
 ========
 
- * no registration is required for installed worker pluggins
- * round robin load balancing
- * crashed workers get restarted
- * task queue works as soon as dispatcher and worker pool components
-   get installed
+Taskqueue has been written as a simpler and easy to manage alternative to
+`BOSS SkyNET`_ thus it provides the following features:
+
+ * Code handling a particular type of tasks is installed as a plugin
+   and doesn't require registration.
+ * Round robin load balancing.
+ * Crashed workers get restarted without the need of any external tool like
+   `daemontools`_.
+ * Task queue works as soon as dispatcher and worker pool components
+   get installed.
+ * Small and easy to understand code base (~ 350 lines of code).
 
 Design
 ======
 
 Task queue consists of two major components: a dispatcher and a worker
-manager. The dispatcher listens to messages in the AMQP queue "taskqueue".
+pool manager. The dispatcher listens to messages in the AMQP queue "taskqueue".
 When a new message arrives the dispatcher parses its body, extracts
 the workitem and the type of worker needed to handle the workitem.
-Then the dispatcher resends the workitem to the queue "worker_<worker_type>".
+Then the dispatcher resends the workitem to the queue "worker_<worker_type>"
+which worker processes of the type "<worker_type>" listen to.
 
 For every installed plugin the worker manager starts one or more worker
 processes according to the config file `/etc/taskqueue/config.ini`. For example
@@ -106,3 +113,6 @@ can be installed on different hosts. It's advised to install
 `python-taskqueue-dispatcher`  on at least two hosts to make the setup
 more reliable. And `python-taskqueue-workerpool` should be installed on
 as many hosts as possible for better load balancing.
+
+.. _BOSS SkyNET: http://wiki.meego.com/Release_Infrastructure/BOSS/SkyNET
+.. _daemontools: http://cr.yp.to/daemontools.html
