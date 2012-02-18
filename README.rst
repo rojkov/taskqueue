@@ -96,9 +96,10 @@ Unpack the tarball, then::
     $ cd taskqueue
     $ dpkg-buildpackage -rfakeroot
 
-The commands above will produce three packages: `python-taskqueue-common`,
-`python-taskqueue-dispatcher` and `python-taskqueue-workerpool`. Install the
-packages.
+The commands above will produce four packages: `python-taskqueue-common`,
+`python-taskqueue-dispatcher`, `python-taskqueue-workerpool` and
+`python-taskqueue-extra`. Install the first three packages and packages
+with your own plugins.
 
 Update AMQP settings in the section `amqp` of the file
 `/etc/taskqueue/config.ini`.
@@ -113,6 +114,8 @@ can be installed on different hosts. It's advised to install
 `python-taskqueue-dispatcher`  on at least two hosts to make the setup
 more reliable. And `python-taskqueue-workerpool` should be installed on
 as many hosts as possible for better load balancing.
+
+The package `python-taskqueue-extra` contains example worker plugins.
 
 .. _BOSS SkyNET: http://wiki.meego.com/Release_Infrastructure/BOSS/SkyNET
 .. _daemontools: http://cr.yp.to/daemontools.html

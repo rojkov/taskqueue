@@ -22,3 +22,9 @@ Architecture: all
 Depends: ${python:Depends}, ${misc:Depends}, python-taskqueue-common
 Description: Lightweight AMQP-based task queue workerpool
  python-taskqueue provides lightweight AMQP-based task queue
+
+Package: python-taskqueue-extra
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}, python-taskqueue-common
+Description: Lightweight AMQP-based task queue. Worker plugins.
+ python-taskqueue provides lightweight AMQP-based task queue

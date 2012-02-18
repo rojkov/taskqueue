@@ -1,2 +1,5 @@
 config.ini etc/taskqueue/
-usr/lib
+usr/lib/*/dist-packages/taskqueue/*.py
+usr/lib/*/dist-packages/*.egg-info
+examples /usr/share/doc/python-taskqueue-common/
+README.rst /usr/share/doc/python-taskqueue-common/
