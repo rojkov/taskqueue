@@ -1,20 +1,16 @@
 #!/usr/bin/ruby
 
-#require 'rubygems'
-
 require 'yajl/json_gem'
 require 'ruote'
 require 'ruote/storage/fs_storage'
 require 'ruote-amqp'
 
-require 'mq'
-
 STDOUT.sync = true
 
-$engine = Ruote::Engine.new(
+engine = Ruote::Engine.new(
     Ruote::Worker.new(Ruote::FsStorage.new('work')))
 
-#$engine.noisy = true
+#engine.noisy = true
 
 #AMQP.logging = true
 AMQP.settings[:host] = 'localhost'
@@ -25,12 +21,12 @@ AMQP.settings[:vhost] = '/wfworker'
 # We run under daemontools and it communicates via signals
 Signal.trap('SIGTERM') do
     puts 'Shutdown gracefully'
-    $engine.shutdown
+    engine.shutdown
     puts 'Asked engine to stop'
 end
 
 # This spawns a thread which listens for amqp responses
-RuoteAMQP::Receiver.new( $engine, :launchitems => true )
+RuoteAMQP::Receiver.new( engine, :launchitems => true )
 
 class FakeParticipant
     include Ruote::LocalParticipant
@@ -70,18 +66,17 @@ class PythonParticipant
 
 end
 
-$engine.register_participant :fake1, FakeParticipant
-$engine.register_participant :python, PythonParticipant
-$engine.register_participant :hardworker, RuoteAMQP::ParticipantProxy, :queue => 'taskqueue'
+engine.register_participant :fake1, FakeParticipant
+engine.register_participant :python, PythonParticipant
+engine.register_participant :hardworker, RuoteAMQP::ParticipantProxy, :queue => 'taskqueue'
 
 pdef = Ruote.process_definition do
     python :name => 'branch_repo'
     fake1 :p1 => 'gggght'
 end
 
-wfid = $engine.launch(pdef, :repo => "test_repo", :user => 'vasya')
+wfid = engine.launch(pdef, :repo => "test_repo", :user => 'vasya')
 
 puts "Engine running"
-$engine.join()
+engine.join()
 puts "Engine stopped"
-#RuoteAMQP.stop!
