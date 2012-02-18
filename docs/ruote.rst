@@ -5,6 +5,7 @@ If you use Ruote to run workflows and want to offload heavy jobs to a cluster
 of workers then taskqueue is what you need.
 
 First you need to have a running Ruote worker with a registered AMQP participant:
+
 .. code-block:: ruby
 
     #!/usr/bin/ruby
