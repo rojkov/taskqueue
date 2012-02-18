@@ -58,6 +58,7 @@ class BaseWorker(object):
         raise NotImplementedError
 
     def handle_delivery(self, channel, method, header, body):
+        """Handle AMQP message."""
         LOG.debug("Method: %r" % method)
         LOG.debug("Header: %r" % header)
         workitem = json.loads(body)
@@ -67,13 +68,21 @@ class BaseWorker(object):
             wi_out = workitem
             wi_out["error"] = str(err)
             wi_out["trace"] = traceback.format_exc()
+        self.report_results(channel, wi_out)
+        channel.basic_ack(method.delivery_tag)
+
+    def report_results(self, channel, workitem):
+        """Report task results back AMQP.
+
+        Feel free to overload this method.
+        """
+
         channel.basic_publish(exchange='',
                               routing_key=self.results_routing_key,
-                              body=json.dumps(wi_out),
+                              body=json.dumps(workitem),
                               properties=pika.BasicProperties(
                                   delivery_mode=2
                               ))
-        channel.basic_ack(method.delivery_tag)
 
     def cleanup(self, signum, frame):
         """Cleanup worker process."""

@@ -67,6 +67,7 @@ plugin::
     from taskqueue.worker import BaseWorker
 
     class Worker(BaseWorker):
+
         def handle_task(self, body):
             # put meat here
             return do_something_heavy(body)
@@ -74,6 +75,21 @@ plugin::
 The return value of Worker.handle_task() is sent back to AMQP with the routing
 key "results" though the key is configurable (i.e. when taskqueue is used with
 Ruote together then the name of the key should be "ruote_workitems").
+
+If you want to disable reporting of results or to modify the way how task
+results are reported or tracked then overload the method `report_results` of
+your custom `Worker` class::
+
+    from taskqueue.worker import BaseWorker
+
+    class Worker(BaseWorker):
+
+        def handle_task(self, body):
+            # put meat here
+            return do_something_heavy(body)
+
+        def report_results(channel, workitem):
+            pass
 
 The plugin needs to be registered as a pluggable resource in the egg's
 `setup.py`::
