@@ -72,8 +72,8 @@ plugin::
             return do_something_heavy(body)
 
 The return value of Worker.handle_task() is sent back to AMQP with the routing
-key `results` though the key is configurable (i.e. when taskqueue is used with
-Ruote together then the name of the key should be `ruote_workitems`).
+key "results" though the key is configurable (i.e. when taskqueue is used with
+Ruote together then the name of the key should be "ruote_workitems").
 
 The plugin needs to be registered as a pluggable resource in the egg's
 `setup.py`::
