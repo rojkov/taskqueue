@@ -2,7 +2,10 @@ import logging
 import pika
 import signal
 import json
+import os
 import traceback
+
+from pwd import getpwnam
 
 LOG = logging.getLogger(__name__)
 
@@ -17,11 +20,27 @@ class BaseWorker(object):
         return cls()
 
     def __init__(self):
+        """Constructor."""
+
         self.channel = None
         self.connection = None
         self.results_routing_key=CFG_DEFAULT_RES_ROUTING
 
     def __call__(self, props, conn_params, queue):
+        """Worker process entry point."""
+
+        if "user" in props.keys():
+            LOG.debug("Try to switch to user '%s'" % props['user'])
+            if os.geteuid() == 0:
+                try:
+                    newuid = getpwnam(props["user"])[2]
+                    os.seteuid(newuid)
+                    LOG.debug("Swithced to uid %d" % newuid)
+                except KeyError:
+                    LOG.error("No such user '%s'" % props['user'])
+            else:
+                LOG.warning("Not enough permissions to switch user")
+
         self.connection = pika.BlockingConnection(conn_params)
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=queue, durable=True,
