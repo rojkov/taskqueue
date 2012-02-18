@@ -1,7 +1,7 @@
 Integration with Ruote
 ======================
 
-If you use Ruote to run workflows and want to offload heavy jobs to a cluster
+If you use Ruote_ to run workflows and want to offload heavy jobs to a cluster
 of workers then taskqueue is what you need.
 
 First you need to have a running Ruote worker with a registered AMQP participant:
@@ -106,3 +106,5 @@ can submit tasks for processing::
                               delivery_mode=2
                           ))
     connection.close()
+
+.. _Ruote: http://ruote.rubyforge.org/
