@@ -1,10 +1,7 @@
-.. taskqueue documentation master file, created by
-   sphinx-quickstart on Sat Feb 18 13:26:33 2012.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Distributed Taskqueue
+=====================
 
-Welcome to taskqueue's documentation!
-=====================================
+Read further if you think Celery_ is too heavy for your needs.
 
 Contents:
 
@@ -12,6 +9,7 @@ Contents:
    :maxdepth: 2
 
    quickstart
+   ruote
 
 Indices and tables
 ==================
@@ -20,3 +18,4 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. _Celery: http://celeryproject.org/
