@@ -6,7 +6,7 @@ Taskqueue is a simple queuing service dividing work among networked machines.
 Features
 --------
 
-Taskqueue has been written as a simpler and easy to manage alternative to
+Taskqueue started as a simpler and easy to manage alternative to
 `BOSS SkyNET`_ thus it provides the following features:
 
  * Code handling a particular type of tasks is installed as a plugin
