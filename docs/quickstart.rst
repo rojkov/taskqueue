@@ -100,7 +100,6 @@ The plugin needs to be registered as a pluggable resource in the egg's
     from setuptools import setup
 
     setup(
-        ...
         entry_points={
             'worker.plugins':
                 ['workerext = extpackage.workerext:Worker.factory']
