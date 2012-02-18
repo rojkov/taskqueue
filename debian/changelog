@@ -1,3 +1,14 @@
+taskqueue (0.1.0-1) unstable; urgency=low
+
+  * Add documentation
+  * Update default config.ini to ease initial setup
+  * Move worker plugins to a dedicated binary package
+  * Ease integration with Ruote
+  * Add examples for worker plugins: simpledownloader and simplebuilder
+  * Implement user switching
+
+ -- Dmitry Rozhkov <dmitry.rojkov@gmail.com>  Sat, 18 Feb 2012 14:50:27 +0000
+
 taskqueue (0.0.1-1) unstable; urgency=low
 
   * Initial release.
