@@ -2,6 +2,18 @@ Quick start
 ===========
 
 Taskqueue is a simple queuing service dividing work among networked machines.
+The concept of Taskqueue is perfectly explained in the `Work Queues`_ tutorial
+for RabbitMQ:
+
+    The main idea behind Work Queues (aka: Task Queues) is to avoid doing a
+    resource-intensive task immediately and having to wait for it to complete.
+    Instead we schedule the task to be done later. We encapsulate a task as a
+    message and send it to the queue. A worker process running in the
+    background will pop the tasks and eventually execute the job. When you
+    run many workers the tasks will be shared between them.
+
+    This concept is especially useful in web applications where it's
+    impossible to handle a complex task during a short HTTP request window.
 
 Features
 --------
@@ -137,3 +149,4 @@ The package `python-taskqueue-extra` contains example worker plugins.
 
 .. _BOSS SkyNET: http://wiki.meego.com/Release_Infrastructure/BOSS/SkyNET
 .. _daemontools: http://cr.yp.to/daemontools.html
+.. _Work Queues: http://www.rabbitmq.com/tutorials/tutorial-two-python.html
