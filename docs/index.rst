@@ -11,6 +11,7 @@ Contents:
    :maxdepth: 2
 
    quickstart
+   configuration
    ruote
 
 Indices and tables
