@@ -47,9 +47,11 @@ class Application(Daemon):
             if not self.config.has_section(worker_type):
                 self.config.add_section(worker_type)
 
-            workers_attr = self.config.get(worker_type, 'workers')
+            if 'workers' not in self.config.defaults().keys():
+                self.config.set('DEFAULT', 'workers', '1')
+
             try:
-                int(workers_attr)
+                int(self.config.get(worker_type, 'workers'))
                 sections = [worker_type]
             except ValueError:
                 # in case more granular settings are required for a specific
