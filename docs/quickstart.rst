@@ -103,7 +103,7 @@ your custom `Worker` class::
             # put meat here
             return do_something_heavy(body)
 
-        def report_results(channel, workitem):
+        def report_results(self, channel, workitem):
             pass
 
 The plugin needs to be registered as a pluggable resource in the egg's
