@@ -25,9 +25,12 @@ class BaseWorker(object):
         self.channel = None
         self.connection = None
         self.results_routing_key=CFG_DEFAULT_RES_ROUTING
+        self.settings = {}
 
     def __call__(self, props, conn_params, queue):
         """Worker process entry point."""
+
+        self.settings.update(props)
 
         if "user" in props.keys():
             LOG.debug("Try to switch to user '%s'" % props['user'])
