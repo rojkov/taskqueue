@@ -3,26 +3,18 @@
 import json
 import pika
 
-TODO_process = """
-Ruote.process_definition do
-    make_tmp_repo_branch # create request branch
-    hardworker :worker_type => 'src_downloader' # download sources from Git and dput to request branch
-    hardworker :worker_type => 'simplebuilder' # get source to local drive, build, dput
-    merge_tmp_branch_to_master # merge built binaries to master branch
-end
-"""
-
 process = """
 Ruote.process_definition do
     sequence :on_error => 'error_handler' do
-        fake1 :fkey1 => 'aaa'
+        debug :msg => 'start'
         python :name => 'branch_repo'
         hardworker :worker_type => 'simpledownloader'
         hardworker :worker_type => 'simplebuilder'
-        fake1 :fkey1 => 'bbb'
+        python :name => 'accept_request'
+        debug :msg => 'success'
     end
     define 'error_handler' do
-        fake1 :oops => 'oops2'
+        debug :msg => 'error'
     end
 end
 """
@@ -31,9 +23,11 @@ pdef = {
     "definition": process,
     "fields":
         {
-            "user": "vasya",
-            "repo": "test_repo",
+            "user":    "vasya",
+            "repo":    "testrepo1",
+            "branch":  "master2",
             "pkgname": "python-riak",
+            "pkgversion": "1.2.1",
             "workdir": "/home/rozhkov/tmp"
         }
 }

@@ -32,7 +32,6 @@ class FakeParticipant
     include Ruote::LocalParticipant
     def consume(workitem)
         puts workitem.inspect
-        puts "workitem consumed\n" + workitem.inspect
         reply_to_engine(workitem)
     end
 end
@@ -66,16 +65,9 @@ class PythonParticipant
 
 end
 
-engine.register_participant :fake1, FakeParticipant
+engine.register_participant :debug, FakeParticipant
 engine.register_participant :python, PythonParticipant
 engine.register_participant :hardworker, RuoteAMQP::ParticipantProxy, :queue => 'taskqueue'
-
-pdef = Ruote.process_definition do
-    python :name => 'branch_repo'
-    fake1 :p1 => 'gggght'
-end
-
-wfid = engine.launch(pdef, :repo => "test_repo", :user => 'vasya')
 
 puts "Engine running"
 engine.join()

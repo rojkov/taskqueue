@@ -2,7 +2,7 @@ import logging
 import json
 import os
 
-from restkit import Resource, BasicAuth
+from derek import Client
 
 from taskqueue.worker import BaseWorker
 
@@ -12,27 +12,13 @@ class Worker(BaseWorker):
 
     def handle_task(self, workitem):
         LOG.debug("Body: %r" % workitem)
-        pkgname = workitem['fields']['pkgname']
-        pkgkey = ["%(name)s/%(version)s/%(id)s" % p
-                  for p in workitem['fields']['packages']
-                  if p['name'] == pkgname][0]
-        LOG.debug("PKey: %s" % pkgkey)
-        user = workitem['fields']['user']
-        repo = workitem['fields']['repo']
-        auth = BasicAuth(user, "qwerty")
-        res = Resource("http://localhost:9000", filters=[auth])
-        resp = res.get(path="/packages/%s" % pkgkey,
-                       headers={'accept': 'application/json'})
-        pkg = json.loads(resp.body_string())
-        LOG.debug("Package to download: %r" % pkg)
-        workitem['fields']['pkgversion'] = pkg['version']
-        for f in pkg['files']:
-            resp = res.get(path="/users/%s/repos/%s/slices/%s/%s/%s/%s" %
-                           (user, repo, workitem['fields']['slice_id'],
-                            pkg['name'], pkg['version'], f['name']))
-            with resp.body_stream() as body:
-                with open(os.path.join(workitem['fields']['workdir'],
-                                       f['name']), 'wb') as pf:
-                    for block in body:
-                        pf.write(block)
+
+        client = Client("vasya", "qwerty")
+        branch = client.branch("%s/%s/%s" % (workitem['fields']['user'],
+                                             workitem['fields']['repo'],
+                                             workitem['fei']['wfid']))
+        branch.download_package(workitem['fields']['pkgname'],
+                                workitem['fields']['pkgversion'],
+                                workitem['fields']['workdir'])
+
         return workitem
