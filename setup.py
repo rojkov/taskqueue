@@ -35,4 +35,5 @@ setup(
                 'third = taskqueue.plugins.third:Worker.factory'
             ]
     },
+    test_suite = "tests"
 )
