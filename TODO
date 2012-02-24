@@ -1,2 +1,4 @@
 1. Currently the only workitem format supported by the taskqueue is Ruote's
    JSON-encoded workitems. Add support for other formats.
+2. Cover 100% of the code with unit tests
+3. Put proper dependencies to setup.py and debian/control
