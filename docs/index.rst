@@ -13,6 +13,7 @@ Contents:
    quickstart
    configuration
    ruote
+   workers
 
 Indices and tables
 ==================

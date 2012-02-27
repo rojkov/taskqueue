@@ -1,3 +1,12 @@
+"""
+The module `taskqueue.worker` contains the abstract class :class:`BaseWorker`.
+All your worker plugins should be derived from it.
+
+Your custom functionality should be put into the method `handle_task()`.
+And if you want to modify the way how task results are reported or tracked
+then override the method `report_results()` of your worker subclass.
+"""
+
 import logging
 import pika
 import signal
@@ -13,6 +22,7 @@ CFG_KEY_RES_ROUTING = "results_routing_key"
 CFG_DEFAULT_RES_ROUTING = "results"
 
 class BaseWorker(object):
+    """Base class for workers."""
 
     @classmethod
     def factory(cls):
@@ -57,11 +67,30 @@ class BaseWorker(object):
         self.channel.start_consuming()
 
     def handle_task(self, workitem):
-        """Handle task."""
+        """Handle task.
+
+        This method is supposed to be overriden in BaseWorker subclasses.
+
+        :param workitem: workflow work item
+        :type workitem: dictionary
+        :returns: new state of work item
+        :rtype: dictionary
+        """
         raise NotImplementedError
 
     def handle_delivery(self, channel, method, header, body):
-        """Handle AMQP message."""
+        """Handle AMQP message.
+
+        :param channel: AMQP channel
+        :type channel: pika.channel.Channel
+        :param method: message's method
+        :type method: pika.frame.Method
+        :param header: message header
+        :type header: pika.frame.Header
+        :param body: message body
+        :type body: string
+        """
+
         LOG.debug("Method: %r" % method)
         LOG.debug("Header: %r" % header)
         workitem = json.loads(body)
@@ -78,6 +107,11 @@ class BaseWorker(object):
         """Report task results back AMQP.
 
         Feel free to overload this method.
+
+        :param channel: AMQP channel
+        :type channel: pika.channel.Channel
+        :param workitem: workflow work item
+        :type workitem: dictionary
         """
 
         channel.basic_publish(exchange='',
