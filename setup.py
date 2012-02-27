@@ -13,7 +13,8 @@ setup(
     license = "GPL",
     keywords = "task queue",
     url = "http://packages.python.org/an_example_pypi_project",
-    packages=['taskqueue', 'taskqueue.plugins'],
+    packages = ['taskqueue', 'taskqueue.plugins'],
+    install_requires = ['pika>=0.9.5', 'python-daemon>=1.5.5'],
     long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -35,5 +36,6 @@ setup(
                 'third = taskqueue.plugins.third:Worker.factory'
             ]
     },
-    test_suite = "tests"
+    test_suite = "tests",
+    tests_require = ['mock>=0.8.0']
 )
