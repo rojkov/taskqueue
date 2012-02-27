@@ -43,9 +43,7 @@ which worker processes of the type "<worker_type>" listen to.
 
 For every installed plugin the worker manager starts one or more worker
 processes according to the config file `/etc/taskqueue/config.ini`. For example
-for the following config:
-
-.. code-block:: guess
+for the following config::
 
     [DEFAULT]
     workers = 1
@@ -124,9 +122,7 @@ The plugin needs to be registered as a pluggable resource in the egg's
 Installation
 ------------
 
-Unpack the tarball, then:
-
-.. code-block:: bash
+Unpack the tarball, then::
 
     $ cd taskqueue
     $ dpkg-buildpackage -rfakeroot
@@ -139,9 +135,7 @@ with your own plugins.
 Update AMQP settings in the section `amqp` of the file
 `/etc/taskqueue/config.ini`.
 
-Start the task queue:
-
-.. code-block:: bash
+Start the task queue::
 
     $ sudo /etc/init.d/python-taskqueue-dispatcher start
     $ sudo /etc/init.d/python-taskqueue-workerpool start
