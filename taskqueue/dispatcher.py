@@ -29,7 +29,7 @@ def handle_delivery(channel, method, header, body):
 
     channel.basic_ack(method.delivery_tag)
 
-class Application(Daemon):
+class Dispatcher(Daemon):
     """Dispatcher daemon"""
 
     pidfile = "/var/run/dispatcher.pid"
@@ -39,7 +39,7 @@ class Application(Daemon):
 
         self.channel = None
         self.connection = None
-        super(Application, self).__init__(config)
+        super(Dispatcher, self).__init__(config)
 
     def run(self):
         """Event cycle."""

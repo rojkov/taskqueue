@@ -8,7 +8,7 @@ from taskqueue.daemonlib import Daemon
 
 LOG = logging.getLogger(__name__)
 
-class Application(Daemon):
+class WorkerPool(Daemon):
 
     pidfile = "/var/run/workerpool.pid"
 
@@ -17,7 +17,7 @@ class Application(Daemon):
 
         self.processes = []
         self.plugins = {}
-        super(Application, self).__init__(config)
+        super(WorkerPool, self).__init__(config)
 
     def create_worker(self, worker_type, props):
         LOG.debug("creating new worker of type %r" % worker_type)

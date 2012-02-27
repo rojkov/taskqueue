@@ -13,20 +13,20 @@ class TestHandler(unittest.TestCase):
             '{"fields": {"params": {"worker_type": "first"}}}')
 
 
-class TestApplication(unittest.TestCase):
+class TestDispatcher(unittest.TestCase):
     """Tests for dispatcher."""
 
     def setUp(self):
         config = ConfigParser()
-        self.disp = taskqueue.dispatcher.Application(config)
+        self.disp = taskqueue.dispatcher.Dispatcher(config)
         self.disp.channel = Mock()
         self.disp.connection = Mock()
         taskqueue.dispatcher.pika = Mock()
 
     def test_cleanup(self):
-        """Test Application.cleanup()."""
+        """Test Dispatcher.cleanup()."""
         self.assertRaises(SystemExit, self.disp.cleanup, None, None)
 
     def test_run(self):
-        """Test Application.run()."""
+        """Test Dispatcher.run()."""
         self.disp.run()
