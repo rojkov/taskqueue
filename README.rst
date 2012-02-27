@@ -29,6 +29,7 @@ Taskqueue started as a simpler and easy to manage alternative to
  * Task queue works as soon as dispatcher and worker pool components
    get installed.
  * Small and easy to understand code base (~ 350 lines of code).
+ * 100% code coverage with unit tests.
 
 Design
 ------
@@ -42,31 +43,33 @@ which worker processes of the type "<worker_type>" listen to.
 
 For every installed plugin the worker manager starts one or more worker
 processes according to the config file `/etc/taskqueue/config.ini`. For example
-for the following config::
+for the following config:
+
+.. code-block:: guess
 
     [DEFAULT]
-    workers: 1
+    workers = 1
 
     [amqp]
-    host: localhost
-    user: wfworker
-    passwd: wfworker
-    vhost: /wfworker
+    host = localhost
+    user = wfworker
+    passwd = wfworker
+    vhost = /wfworker
 
     ; Workers
     [worker1]
-    workers: 3
+    workers = 3
 
     [worker2]
-    workers: bifh1, bifh2
+    workers = bifh1, bifh2
 
     [worker2_bifh1]
-    workers: 1
-    user: bifh1
+    workers = 1
+    user = bifh1
 
     [worker2_bifh2]
-    workers: 1
-    user: bifh2
+    workers = 1
+    user = bifh2
 
 the worker manager creates 3 identical instances of the type `worker1` and
 2 instances of the type `worker2` configured to run under users `bifh1` and
@@ -121,7 +124,9 @@ The plugin needs to be registered as a pluggable resource in the egg's
 Installation
 ------------
 
-Unpack the tarball, then::
+Unpack the tarball, then:
+
+.. code-block:: bash
 
     $ cd taskqueue
     $ dpkg-buildpackage -rfakeroot
@@ -134,10 +139,12 @@ with your own plugins.
 Update AMQP settings in the section `amqp` of the file
 `/etc/taskqueue/config.ini`.
 
-Start the task queue::
+Start the task queue:
 
-    # /etc/init.d/python-taskqueue-dispatcher start
-    # /etc/init.d/python-taskqueue-workerpool start
+.. code-block:: bash
+
+    $ sudo /etc/init.d/python-taskqueue-dispatcher start
+    $ sudo /etc/init.d/python-taskqueue-workerpool start
 
 The packages `python-taskqueue-dispatcher` and `python-taskqueue-workerpool`
 can be installed on different hosts. It's advised to install

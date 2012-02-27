@@ -29,6 +29,7 @@ Taskqueue started as a simpler and easy to manage alternative to
  * Task queue works as soon as dispatcher and worker pool components
    get installed.
  * Small and easy to understand code base (~ 350 lines of code).
+ * 100% code coverage with unit tests.
 
 Design
 ------
