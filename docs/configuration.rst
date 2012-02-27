@@ -17,20 +17,22 @@ You can provide settings for
   2. a specific type of workers,
   3. a named group of workers of some type.
 
-The example below explains all three cases::
+The example below explains all three cases:
+
+.. code-block:: guess
 
     [DEFAULT]
-    global_option_name: some value
+    global_option_name = some value
 
     [worker1]
-    some_worker1_option: this value is common for all instances of worker1 workers
+    some_worker1_option = this value is common for all instances of worker1 workers
 
     [worker2]
-    some_worker2_option: this value is common for all instances of worker2 workers
-    workers: group1, group2
+    some_worker2_option = this value is common for all instances of worker2 workers
+    workers = group1, group2
 
     [worker2_group1]
-    group1_specific_option: only the instances in group1 of worker2 type will get this option
+    group1_specific_option = only the instances in group1 of worker2 type will get this option
 
 Effective worker settings are available in the attribute :attr:`BaseWorker.settings`.
 

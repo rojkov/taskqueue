@@ -53,11 +53,12 @@ recieved by taskqueue's dispatcher.
 Next you need to configure taskqueue to report task results back to the AMQP.
 By default `RuoteAMQP::Receiver` instances listen to the queue
 `ruote_workitems` thus update the file `/etc/taskqueue/config.ini` to set
-the setting `results_routing_key` to `ruote_workitems`::
+the setting `results_routing_key` to `ruote_workitems`:
+
+.. code-block:: guess
 
     [DEFAULT]
-    results_routing_key: ruote_workitems
-    ...
+    results_routing_key = ruote_workitems
 
 Make sure that some taskqueue dispetchers and workpools are running. Now you
 can submit tasks for processing::
