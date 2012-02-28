@@ -1,9 +1,16 @@
+taskqueue (0.2.1) unstable; urgency=low
+
+  * Give more descriptive names to classes of dispatcher and worker pool
+  * Add unit tests
+
+ -- Dmitry Rozhkov <dmitry.rojkov@gmail.com>  Tue, 28 Feb 2012 10:51:29 +0000
+
 taskqueue (0.2.0-1) unstable; urgency=low
 
   * Make 'workers' setting non-mandatory in config file
   * Store worker settings in BaseWorker.settings attribute
 
- -- Dmitry Rozhkov <dmitry.rozhkov@nokia.com>  Mon, 20 Feb 2012 11:53:22 +0000
+ -- Dmitry Rozhkov <dmitry.rojkov@gmail.com>  Mon, 20 Feb 2012 11:53:22 +0000
 
 taskqueue (0.1.0-1) unstable; urgency=low
 
