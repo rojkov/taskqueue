@@ -104,9 +104,9 @@ class BaseWorker(object):
         channel.basic_ack(method.delivery_tag)
 
     def report_results(self, channel, workitem):
-        """Report task results back AMQP.
+        """Report task results back to AMQP.
 
-        Feel free to overload this method.
+        Feel free to override this method.
 
         :param channel: AMQP channel
         :type channel: pika.channel.Channel
