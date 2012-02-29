@@ -1,6 +1,6 @@
 import unittest
 
-from ConfigParser import SafeConfigParser as ConfigParser
+from taskqueue.confparser import ConfigParser
 from mock import Mock
 
 import multiprocessing
