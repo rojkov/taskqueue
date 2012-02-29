@@ -10,26 +10,6 @@ from taskqueue.daemonlib import Daemon
 
 LOG = logging.getLogger(__name__)
 
-def get_section_items(config, section, defaults):
-    """Get config section items, but ignore items from DEFAULT section."""
-
-    output = defaults.copy()
-    if not config.has_section(section):
-        return output
-
-    # preserve config defaults and delete them from config
-    conf_defaults = config.defaults()
-    for key in conf_defaults.keys():
-        config.remove_option('DEFAULT', key)
-
-    output.update(config.items(section))
-
-    # restore default options in config
-    for key, value in conf_defaults.items():
-        config.set('DEFAULT', key, value)
-    return output
-
-
 class WorkerPool(Daemon):
     """Worker pool manager."""
 
@@ -42,17 +22,20 @@ class WorkerPool(Daemon):
         self.plugins = {}
         super(WorkerPool, self).__init__(config)
 
+    def create_worker(self, worker_type, props):
+        """Create one worker process."""
+        target = self.plugins[worker_type]()
+        proc = Process(target=target,
+                       args=(props, self.amqp_params,
+                             "worker_%s" % worker_type))
+        proc.start()
+        self.processes.append((worker_type, proc, props))
+
     def create_workers(self, worker_type, props):
         """Create worker processes."""
-
         for i in range(0, int(props['instances'])):
             LOG.debug("creating new %d worker of type %r" % (i, worker_type))
-            target = self.plugins[worker_type]()
-            proc = Process(target=target,
-                           args=(props, self.amqp_params,
-                                 "worker_%s" % worker_type))
-            proc.start()
-            self.processes.append((worker_type, proc, props))
+            self.create_worker(worker_type, props)
 
     def run(self):
         """Application entry point."""
@@ -80,15 +63,15 @@ class WorkerPool(Daemon):
                 continue
 
             grp_sect = "%s_%s" % ('worker', wtype)
-            grp_opts = get_section_items(self.config, grp_sect, defaults)
+            grp_opts = dict(self.config.items(grp_sect, defaults=defaults))
 
             if 'subgroups' in grp_opts:
                 subgrp_sects = ['%s_%s' % (grp_sect, subgrp.strip())
                                 for subgrp in grp_opts['subgroups'].split(',')]
                 for subgrp_sect in subgrp_sects:
-                    subgrp_opts = get_section_items(self.config, subgrp_sect,
-                                                    grp_opts)
-                    self.create_workers(wtype, subgrp_opts)
+                    subgrp_opts = self.config.items(subgrp_sect,
+                                                    defaults=grp_opts)
+                    self.create_workers(wtype, dict(subgrp_opts))
             else:
                 self.create_workers(wtype, grp_opts)
 
@@ -106,7 +89,7 @@ class WorkerPool(Daemon):
                               (proc, worker_type))
                     proc.join()
                     self.processes.remove(process)
-                    self.create_workers(worker_type, props)
+                    self.create_worker(worker_type, props)
 
     def cleanup(self, signum, frame):
         """Handler for termination signals."""
