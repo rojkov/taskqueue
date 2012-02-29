@@ -1,3 +1,5 @@
+"""Worker pool functionality."""
+
 import sys
 import logging
 import pkg_resources
@@ -8,7 +10,28 @@ from taskqueue.daemonlib import Daemon
 
 LOG = logging.getLogger(__name__)
 
+def get_section_items(config, section, defaults):
+    """Get config section items, but ignore items from DEFAULT section."""
+
+    output = defaults.copy()
+    if not config.has_section(section):
+        return output
+
+    # preserve config defaults and delete them from config
+    conf_defaults = config.defaults()
+    for key in conf_defaults.keys():
+        config.remove_option('DEFAULT', key)
+
+    output.update(config.items(section))
+
+    # restore default options in config
+    for key, value in conf_defaults.items():
+        config.set('DEFAULT', key, value)
+    return output
+
+
 class WorkerPool(Daemon):
+    """Worker pool manager."""
 
     pidfile = "/var/run/workerpool.pid"
 
@@ -19,52 +42,55 @@ class WorkerPool(Daemon):
         self.plugins = {}
         super(WorkerPool, self).__init__(config)
 
-    def create_worker(self, worker_type, props):
-        LOG.debug("creating new worker of type %r" % worker_type)
-        target = self.plugins[worker_type]()
-        proc = Process(target=target,
-                       args=(props, self.amqp_params,
-                             "worker_%s" % worker_type))
-        proc.start()
-        self.processes.append((worker_type, proc, props))
+    def create_workers(self, worker_type, props):
+        """Create worker processes."""
+
+        for i in range(0, int(props['instances'])):
+            LOG.debug("creating new %d worker of type %r" % (i, worker_type))
+            target = self.plugins[worker_type]()
+            proc = Process(target=target,
+                           args=(props, self.amqp_params,
+                                 "worker_%s" % worker_type))
+            proc.start()
+            self.processes.append((worker_type, proc, props))
 
     def run(self):
         """Application entry point."""
 
-        LOG.debug("run!")
+        LOG.debug("WorkerPool.run()")
+
+        # use settings from DEFAULT for unconfigured worker plugins
+        if not self.config.has_section('workers'):
+            self.config.add_section('workers')
+
+        defaults = {
+            'enabled_plugins': '*',
+            'instances': '1'
+        }
+        defaults.update(self.config.items('workers'))
 
         group = "worker.plugins"
         for entrypoint in pkg_resources.iter_entry_points(group=group):
-            worker_type = entrypoint.name
-            LOG.info("register plugin %r" % worker_type)
+            wtype = entrypoint.name
+            LOG.info("register plugin %r" % wtype)
             try:
-                self.plugins[worker_type] = entrypoint.load()
+                self.plugins[wtype] = entrypoint.load()
             except ImportError:
-                LOG.info("worker of type %r not installed" % worker_type)
+                LOG.info("worker of type %r not installed" % wtype)
                 continue
 
-            # use settings from DEFAULT for unconfigured worker plugins
-            if not self.config.has_section(worker_type):
-                self.config.add_section(worker_type)
+            grp_sect = "%s_%s" % ('worker', wtype)
+            grp_opts = get_section_items(self.config, grp_sect, defaults)
 
-            if 'workers' not in self.config.defaults().keys():
-                self.config.set('DEFAULT', 'workers', '1')
-
-            try:
-                int(self.config.get(worker_type, 'workers'))
-                sections = [worker_type]
-            except ValueError:
-                # in case more granular settings are required for a specific
-                # worker instance:
-                #  [<worker_type>_<instance_name>]
-                #  user: bifh1
-                sections = ["%s_%s" % (worker_type, sect.strip()) for sect in
-                            self.config.get(worker_type, 'workers').split(",")]
-            for section in sections:
-                max_workers = self.config.getint(section, 'workers')
-                for i in range(0, max_workers):
-                    self.create_worker(worker_type,
-                                       dict(self.config.items(section)))
+            if 'subgroups' in grp_opts:
+                subgrp_sects = ['%s_%s' % (grp_sect, subgrp.strip())
+                                for subgrp in grp_opts['subgroups'].split(',')]
+                for subgrp_sect in subgrp_sects:
+                    subgrp_opts = get_section_items(self.config, subgrp_sect,
+                                                    grp_opts)
+                    self.create_workers(wtype, subgrp_opts)
+            else:
+                self.create_workers(wtype, grp_opts)
 
         self.monitor()
 
@@ -80,7 +106,7 @@ class WorkerPool(Daemon):
                               (proc, worker_type))
                     proc.join()
                     self.processes.remove(process)
-                    self.create_worker(worker_type, props)
+                    self.create_workers(worker_type, props)
 
     def cleanup(self, signum, frame):
         """Handler for termination signals."""
