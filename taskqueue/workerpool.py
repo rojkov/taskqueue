@@ -10,6 +10,14 @@ from taskqueue.daemonlib import Daemon
 
 LOG = logging.getLogger(__name__)
 
+SECTION_WORKERS = 'workers'
+
+PREFIX_GROUP = 'worker'
+
+OPT_SUBGROUPS = 'subgroups'
+OPT_INSTANCES = 'instances'
+OPT_PLUGINS   = 'enabled_plugins'
+
 class WorkerPool(Daemon):
     """Worker pool manager."""
 
@@ -33,7 +41,7 @@ class WorkerPool(Daemon):
 
     def create_workers(self, worker_type, props):
         """Create worker processes."""
-        for i in range(0, int(props['instances'])):
+        for i in range(0, int(props[OPT_INSTANCES])):
             LOG.debug("creating new %d worker of type %r" % (i, worker_type))
             self.create_worker(worker_type, props)
 
@@ -43,14 +51,14 @@ class WorkerPool(Daemon):
         LOG.debug("WorkerPool.run()")
 
         # use settings from DEFAULT for unconfigured worker plugins
-        if not self.config.has_section('workers'):
-            self.config.add_section('workers')
+        if not self.config.has_section(SECTION_WORKERS):
+            self.config.add_section(SECTION_WORKERS)
 
         defaults = {
-            'enabled_plugins': '*',
-            'instances': '1'
+            OPT_PLUGINS:   '*',
+            OPT_INSTANCES: '1'
         }
-        defaults.update(self.config.items('workers'))
+        defaults.update(self.config.items(SECTION_WORKERS))
 
         group = "worker.plugins"
         for entrypoint in pkg_resources.iter_entry_points(group=group):
@@ -62,12 +70,12 @@ class WorkerPool(Daemon):
                 LOG.info("worker of type %r not installed" % wtype)
                 continue
 
-            grp_sect = "%s_%s" % ('worker', wtype)
+            grp_sect = "%s_%s" % (PREFIX_GROUP, wtype)
             grp_opts = dict(self.config.items(grp_sect, defaults=defaults))
 
-            if 'subgroups' in grp_opts:
-                subgrp_sects = ['%s_%s' % (grp_sect, subgrp.strip())
-                                for subgrp in grp_opts['subgroups'].split(',')]
+            if OPT_SUBGROUPS in grp_opts:
+                subgrp_sects = ['%s_%s' % (grp_sect, sgrp.strip())
+                                for sgrp in grp_opts[OPT_SUBGROUPS].split(',')]
                 for subgrp_sect in subgrp_sects:
                     subgrp_opts = self.config.items(subgrp_sect,
                                                     defaults=grp_opts)
