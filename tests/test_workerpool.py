@@ -3,7 +3,6 @@ import unittest
 from taskqueue.confparser import ConfigParser
 from mock import Mock
 
-import multiprocessing
 import taskqueue.workerpool
 
 class TestError(Exception):
@@ -32,6 +31,14 @@ class TestWorkerPool(unittest.TestCase):
         self.wpool.plugins['first'] = fake_fun
         self.wpool.create_worker('first', {})
 
+    def test_is_plugin_enabled(self):
+        """Test WorkerPool.is_plugin_enabled()."""
+        self.assertTrue(self.wpool.is_plugin_enabled("fakeplugin"))
+
+        self.wpool._enabled_plugins = ["fakeplugin"]
+        self.assertTrue(self.wpool.is_plugin_enabled("fakeplugin"))
+        self.assertFalse(self.wpool.is_plugin_enabled("not_enabled_plugin"))
+
     def test_create_worker(self):
         """Test WorkerPool.create_worker()."""
 
@@ -56,8 +63,10 @@ class TestWorkerPool(unittest.TestCase):
     def test_run_with_group(self):
         """Test WorkerPool.run() with process group."""
 
-        self.wpool.config.add_section('first')
-        self.wpool.config.add_section('first_group1')
-        self.wpool.config.set('first', 'workers', 'group1')
+        self.wpool.config.add_section('workers')
+        self.wpool.config.set('workers', 'enabled_plugins', 'first')
+        self.wpool.config.add_section('worker_first')
+        self.wpool.config.add_section('worker_first_subgroup1')
+        self.wpool.config.set('worker_first', 'subgroups', 'subgroup1')
         self.assertRaises(TestError, self.wpool.run)
         self.assertTrue(self.is_alive_counter == 1)
