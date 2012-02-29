@@ -28,7 +28,15 @@ class WorkerPool(Daemon):
 
         self.processes = []
         self.plugins = {}
+        self._enabled_plugins = '*'
         super(WorkerPool, self).__init__(config)
+
+    def is_plugin_enabled(self, name):
+        """Return True if given plugin is enabled in config."""
+
+        if self._enabled_plugins == "*":
+            return True
+        return name in self._enabled_plugins
 
     def create_worker(self, worker_type, props):
         """Create one worker process."""
@@ -60,9 +68,18 @@ class WorkerPool(Daemon):
         }
         defaults.update(self.config.items(SECTION_WORKERS))
 
+        if defaults[OPT_PLUGINS] != '*':
+            self._enabled_plugins = \
+                    [plgn.strip() for plgn in defaults[OPT_PLUGINS].split(",")]
+
         group = "worker.plugins"
         for entrypoint in pkg_resources.iter_entry_points(group=group):
             wtype = entrypoint.name
+
+            if not self.is_plugin_enabled(wtype):
+                LOG.info("the plugin '%s' is not enabled in the config" % wtype)
+                continue
+
             LOG.info("register plugin %r" % wtype)
             try:
                 self.plugins[wtype] = entrypoint.load()
