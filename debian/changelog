@@ -1,3 +1,11 @@
+taskqueue (0.3.0) unstable; urgency=low
+
+  * Implement workers namespace in the config file
+  * Add non-default policy 'plugin is disabled if not enabled
+    explicitly'
+
+ -- Dmitry Rozhkov <dmitry.rojkov@gmail.com>  Wed, 29 Feb 2012 15:44:31 +0000
+
 taskqueue (0.2.1) unstable; urgency=low
 
   * Give more descriptive names to classes of dispatcher and worker pool
