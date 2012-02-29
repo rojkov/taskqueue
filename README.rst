@@ -45,9 +45,6 @@ For every installed plugin the worker manager starts one or more worker
 processes according to the config file `/etc/taskqueue/config.ini`. For example
 for the following config::
 
-    [DEFAULT]
-    workers = 1
-
     [amqp]
     host = localhost
     user = wfworker
@@ -55,18 +52,19 @@ for the following config::
     vhost = /wfworker
 
     ; Workers
-    [worker1]
-    workers = 3
 
-    [worker2]
-    workers = bifh1, bifh2
+    [worker_worker1]
+    instances = 3
 
-    [worker2_bifh1]
-    workers = 1
+    [worker_worker2]
+    subgroups = bifh1, bifh2
+
+    [worker_worker2_bifh1]
+    instances = 1
     user = bifh1
 
-    [worker2_bifh2]
-    workers = 1
+    [worker_worker2_bifh2]
+    instances = 1
     user = bifh2
 
 the worker manager creates 3 identical instances of the type `worker1` and

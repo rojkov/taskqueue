@@ -57,7 +57,7 @@ the setting `results_routing_key` to `ruote_workitems`:
 
 .. code-block:: guess
 
-    [DEFAULT]
+    [workers]
     results_routing_key = ruote_workitems
 
 Make sure that some taskqueue dispetchers and workpools are running. Now you
