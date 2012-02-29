@@ -28,7 +28,7 @@ Taskqueue started as a simpler and easy to manage alternative to
    `daemontools`_.
  * Task queue works as soon as dispatcher and worker pool components
    get installed.
- * Small and easy to understand code base (~ 350 lines of code).
+ * Small and easy to understand code base (~ 500 lines of code).
  * 100% code coverage with unit tests.
 
 Design
