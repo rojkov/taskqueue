@@ -34,12 +34,17 @@ Taskqueue started as a simpler and easy to manage alternative to
 Design
 ------
 
-Task queue consists of two major components: a dispatcher and a worker
-pool manager. The dispatcher listens to messages in the AMQP queue "taskqueue".
-When a new message arrives the dispatcher parses its body, extracts
-the workitem and the type of worker needed to handle the workitem.
+Task queue consists of two major components: a dispatcher (optional) and a
+worker pool manager. The dispatcher listens to messages in the AMQP queue
+"taskqueue". When a new message arrives the dispatcher parses its body,
+extracts the workitem and the type of worker needed to handle the workitem.
 Then the dispatcher resends the workitem to the queue "worker_<worker_type>"
 which worker processes of the type "<worker_type>" listen to.
+
+Dispatchers are not actually needed as a client can send a message to worker's
+queue directly. But one can find them useful in case it's simpler for a client
+to incapsulate info on the worker type into a workitem rather than to set a
+proper routing key.
 
 For every installed plugin the worker manager starts one or more worker
 processes according to the config file `/etc/taskqueue/config.ini`. For example
