@@ -59,6 +59,9 @@ class BasicWorkitem(object):
         self._body = None
         self._worker_type = None
 
+    def __repr__(self):
+        return "<BasicWorkitem([worker_type='%s'])>" % self._worker_type
+
     def loads(self, blob):
         try:
             self._worker_type, self._body = blob.split(" ", 1)
@@ -92,6 +95,9 @@ class RuoteWorkitem(object):
     def __init__(self, options=None):
         self._body = None
         self._worker_type = None
+
+    def __repr__(self):
+        return "<RuoteWorkitem([worker_type='%s'])>" % self._worker_type
 
     def loads(self, blob):
         try:
