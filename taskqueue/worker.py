@@ -71,8 +71,19 @@ class BaseWorker(object):
 
     def is_acceptable(self, workitem):
         """Check if received workitem can be handled by worker."""
-        # TODO: this is a stub. implement workitem type checking
-        return True
+
+        wtype, subwtype = workitem.mime_type.split('/')
+
+        for mtype in self.ACCEPT:
+            ctype, subctype = mtype.split('/')
+            if (ctype == '*' or ctype == wtype) and \
+               (subctype == '*' or subctype == subwtype):
+                LOG.debug("Accept: %s" % workitem.mime_type)
+                return True
+
+        LOG.error("Workitem '%r got rejected by %s.%s as incompatible" %
+                  (workitem, self.__module__, self.__class__.__name__))
+        return False
 
     def handle_task(self, workitem):
         """Handle task.
