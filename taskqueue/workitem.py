@@ -79,10 +79,10 @@ class BasicWorkitem(object):
             raise BasicWorkitemError("Workitem hasn't been loaded")
         return self._worker_type
 
-    def set_error(error):
+    def set_error(self, error):
         self._body += "\nError: %s" % error
 
-    def set_trace(trace):
+    def set_trace(self, trace):
         self._body += "\nTrace: %s" % trace
 
 class RuoteWorkitemError(WorkitemError):
@@ -117,10 +117,10 @@ class RuoteWorkitem(object):
             raise RuoteWorkitemError("Workitem hasn't been loaded")
         return self._worker_type
 
-    def set_error(error):
+    def set_error(self, error):
         self._body["error"] = error
 
-    def set_trace(trace):
+    def set_trace(self, trace):
         self._body["trace"] = trace
 
     @property
