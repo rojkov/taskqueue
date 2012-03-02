@@ -39,8 +39,9 @@ def get_workitem(amqp_header, amqp_body):
                      entry.module_name)
             continue
         except WorkitemError:
-            LOG.warning("Can't parse workitem with the plugin '%s'" %
-                        entry.module_name)
+            LOG.warning("Can't parse workitem with the plugin '%s.%s'" %
+                        (entry.module_name, cls.__name__))
+            workitem = None
             continue
 
     if workitem is None:
