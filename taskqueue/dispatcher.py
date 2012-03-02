@@ -24,7 +24,8 @@ def handle_delivery(channel, method, header, body):
                           routing_key='worker_%s' % worker,
                           body=body,
                           properties=pika.BasicProperties(
-                              delivery_mode=2
+                              delivery_mode=2,
+                              content_type=header.content_type
                           ))
 
     channel.basic_ack(method.delivery_tag)
