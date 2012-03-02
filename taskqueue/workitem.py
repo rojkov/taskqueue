@@ -17,10 +17,13 @@ class WorkitemError(Exception):
 
 def get_workitem(amqp_header, amqp_body):
     """Constructs workitems of a certain type."""
+    LOG.debug("get_workitem(%s, '%s')" % (amqp_header, amqp_body))
 
     if amqp_header.content_type:
         ctype = amqp_header.content_type
     else:
+        LOG.warning("header doesn't have Content-type. Assume default '%s'" %
+                    DEFAULT_CONTENT_TYPE)
         ctype = DEFAULT_CONTENT_TYPE
 
     ctype = CONTENT_TYPE_MAP.get(ctype, ctype)
@@ -28,7 +31,7 @@ def get_workitem(amqp_header, amqp_body):
     workitem = None
     # look for a Workitem class
     for entry in iter_entry_points(group='workitems', name=ctype):
-        LOG.debug("found module '%s'" % entry.module_name)
+        LOG.debug("found %r" % entry)
         try:
             cls = entry.load()
             workitem = cls()
@@ -45,7 +48,7 @@ def get_workitem(amqp_header, amqp_body):
             continue
 
     if workitem is None:
-        raise WorkitemError("No working plugin found for workitem of "
+        raise WorkitemError("No suitable plugin found for workitem of "
                             "the type '%s'" % ctype)
     return workitem
 
