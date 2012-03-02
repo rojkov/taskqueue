@@ -8,7 +8,7 @@ import pika
 import json
 
 from taskqueue.daemonlib import Daemon
-from taskqueue.workitem import get_workitem
+from taskqueue.workitem import get_workitem, WorkitemError
 
 LOG = logging.getLogger(__name__)
 
@@ -17,9 +17,16 @@ def handle_delivery(channel, method, header, body):
     LOG.debug("Method: %r" % method)
     LOG.debug("Header: %r" % header)
     LOG.debug("Body: %r" % body)
-    workitem = get_workitem(header, body)
-    worker = workitem.worker_type
 
+    try:
+        workitem = get_workitem(header, body)
+    except WorkitemError as err:
+        # Report error and accept message
+        LOG.error("%s" % err)
+        channel.basic_ack(method.delivery_tag)
+        return
+
+    worker = workitem.worker_type
     channel.basic_publish(exchange='',
                           routing_key='worker_%s' % worker,
                           body=body,

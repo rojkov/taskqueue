@@ -15,7 +15,7 @@ import traceback
 
 from pwd import getpwnam
 
-from taskqueue.workitem import get_workitem
+from taskqueue.workitem import get_workitem, WorkitemError
 
 LOG = logging.getLogger(__name__)
 
@@ -101,7 +101,15 @@ class BaseWorker(object):
 
         LOG.debug("Method: %r" % method)
         LOG.debug("Header: %r" % header)
-        workitem = get_workitem(header, body)
+        try:
+            workitem = get_workitem(header, body)
+        except WorkitemError as err:
+            LOG.error("Worker %s.%s can't handle delivery with header '%r' "
+                      "and body:\n%s" % (self.__module__,
+                                         self.__class__.__name__,
+                                         header, body))
+            channel.basic_ack(method.delivery_tag)
+            return
         wi_out = workitem
         if self.is_acceptable(workitem):
             try:
