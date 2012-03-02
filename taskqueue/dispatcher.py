@@ -8,6 +8,7 @@ import pika
 import json
 
 from taskqueue.daemonlib import Daemon
+from taskqueue.workitem import get_workitem
 
 LOG = logging.getLogger(__name__)
 
@@ -16,13 +17,12 @@ def handle_delivery(channel, method, header, body):
     LOG.debug("Method: %r" % method)
     LOG.debug("Header: %r" % header)
     LOG.debug("Body: %r" % body)
-    workitem = json.loads(body)
-    worker = workitem["fields"]["params"]["worker_type"]
-    msg = body
+    workitem = get_workitem(header, body)
+    worker = workitem.worker_type
 
     channel.basic_publish(exchange='',
                           routing_key='worker_%s' % worker,
-                          body=msg,
+                          body=body,
                           properties=pika.BasicProperties(
                               delivery_mode=2
                           ))

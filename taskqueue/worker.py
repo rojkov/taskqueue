@@ -10,11 +10,12 @@ then override the method `report_results()` of your worker subclass.
 import logging
 import pika
 import signal
-import json
 import os
 import traceback
 
 from pwd import getpwnam
+
+from taskqueue.workitem import get_workitem
 
 LOG = logging.getLogger(__name__)
 
@@ -23,6 +24,8 @@ CFG_DEFAULT_RES_ROUTING = "results"
 
 class BaseWorker(object):
     """Base class for workers."""
+
+    ACCEPT = ["*/*"]
 
     @classmethod
     def factory(cls):
@@ -66,6 +69,11 @@ class BaseWorker(object):
             self.results_routing_key = props[CFG_KEY_RES_ROUTING]
         self.channel.start_consuming()
 
+    def is_acceptable(self, workitem):
+        """Check if received workitem can be handled by worker."""
+        # TODO: this is a stub. implement workitem type checking
+        return True
+
     def handle_task(self, workitem):
         """Handle task.
 
@@ -93,13 +101,16 @@ class BaseWorker(object):
 
         LOG.debug("Method: %r" % method)
         LOG.debug("Header: %r" % header)
-        workitem = json.loads(body)
-        try:
-            wi_out = self.handle_task(workitem)
-        except Exception as err:
-            wi_out = workitem
-            wi_out["error"] = str(err)
-            wi_out["trace"] = traceback.format_exc()
+        workitem = get_workitem(header, body)
+        wi_out = workitem
+        if self.is_acceptable(workitem):
+            try:
+                wi_out = self.handle_task(workitem)
+            except Exception as err:
+                wi_out.set_error(str(err))
+                wi_out.set_trace(traceback.format_exc())
+        else:
+            wi_out.set_error("Worker doesn't support this type of workitems")
         self.report_results(channel, wi_out)
         channel.basic_ack(method.delivery_tag)
 
@@ -116,7 +127,7 @@ class BaseWorker(object):
 
         channel.basic_publish(exchange='',
                               routing_key=self.results_routing_key,
-                              body=json.dumps(workitem),
+                              body=workitem.dumps(),
                               properties=pika.BasicProperties(
                                   delivery_mode=2
                               ))

@@ -34,6 +34,10 @@ setup(
                 'simplebuilder = taskqueue.plugins.simplebuilder:Worker.factory',
                 'simpledownloader = taskqueue.plugins.simpledownloader:Worker.factory',
                 'third = taskqueue.plugins.third:Worker.factory'
+            ],
+        'workitems': [
+                'application/x-ruote-workitem = taskqueue.workitem:RuoteWorkitem',
+                'application/x-basic-workitem = taskqueue.workitem:BasicWorkitem'
             ]
     },
     test_suite = "tests",
