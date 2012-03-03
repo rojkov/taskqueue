@@ -10,6 +10,7 @@ from taskqueue.daemonlib import Daemon
 
 LOG = logging.getLogger(__name__)
 
+# TODO: move the constants to confparser
 SECTION_WORKERS = 'workers'
 
 PREFIX_GROUP = 'worker'
