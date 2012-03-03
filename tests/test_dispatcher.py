@@ -17,7 +17,12 @@ class TestDispatcher(unittest.TestCase):
 
     def test_handle_delivery(self):
         """Test handle_delivery()."""
-        self.disp.handle_delivery(Mock(), Mock(), Mock(),
+        header = Mock()
+        header.content_type = "test/fake"
+        self.disp.handle_delivery(Mock(), Mock(), header,
+            '{"fields": {"params": {"worker_type": "first"}}}')
+        header.content_type = "application/x-ruote-workitem"
+        self.disp.handle_delivery(Mock(), Mock(), header,
             '{"fields": {"params": {"worker_type": "first"}}}')
 
     def test_cleanup(self):

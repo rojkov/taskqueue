@@ -4,6 +4,8 @@ from mock import Mock
 
 import taskqueue.worker
 
+from taskqueue.workitem import BasicWorkitem
+
 class TestBaseWorker(unittest.TestCase):
     """Tests for BaseWorker."""
 
@@ -21,6 +23,17 @@ class TestBaseWorker(unittest.TestCase):
     def test_handle_task(self):
         """Test BaseWorker.handle_task()."""
         self.assertRaises(NotImplementedError, self.worker.handle_task, {})
+
+    def test_is_acceptable(self):
+        """Test BaseWorker.is_acceptable()."""
+        wi = BasicWorkitem()
+        self.assertTrue(self.worker.is_acceptable(wi))
+
+        self.worker.ACCEPT = ['application/x-basic-workitem']
+        self.assertTrue(self.worker.is_acceptable(wi))
+
+        self.worker.ACCEPT = ['application/x-incompatible']
+        self.assertFalse(self.worker.is_acceptable(wi))
 
     def test_callable(self):
         """Test BaseWorker.__call__()."""
@@ -41,7 +54,17 @@ class TestBaseWorker(unittest.TestCase):
     def test_handle_delivery(self):
         """Test BaseWorker.handle_delivery()."""
 
-        self.worker.handle_delivery(Mock(), Mock(), Mock(), Mock())
+        header = Mock()
+        header.content_type = 'test/fake'
+        self.assertFalse(self.worker.handle_delivery(Mock(), Mock(), header, ""))
+        header.content_type = 'application/x-basic-workitem'
+        self.assertFalse(self.worker.handle_delivery(Mock(), Mock(), header, ""))
+
+        self.assertTrue(self.worker.handle_delivery(Mock(), Mock(), header,
+                                    "worker_type_name body"))
+        self.worker.ACCEPT = ['application/x-incompatible']
+        self.assertTrue(self.worker.handle_delivery(Mock(), Mock(), header,
+                                    "worker_type_name body"))
 
     def test_report_results(self):
         """Test BaseWorker.report_results()."""
