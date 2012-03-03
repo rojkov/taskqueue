@@ -72,7 +72,7 @@ class BasicWorkitem(object):
 
     mime_type = 'application/x-basic-workitem'
 
-    def __init__(self, options=None):
+    def __init__(self):
         self._body = None
         self._worker_type = None
 
@@ -109,7 +109,7 @@ class RuoteWorkitem(object):
 
     mime_type = 'application/x-ruote-workitem'
 
-    def __init__(self, options=None):
+    def __init__(self):
         self._body = None
         self._worker_type = None
 
