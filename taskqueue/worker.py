@@ -124,7 +124,7 @@ class BaseWorker(object):
                                          self.__class__.__name__,
                                          header, body))
             channel.basic_ack(method.delivery_tag)
-            return
+            return False
         wi_out = workitem
         if self.is_acceptable(workitem):
             try:
@@ -136,6 +136,7 @@ class BaseWorker(object):
             wi_out.set_error("Worker doesn't support this type of workitems")
         self.report_results(channel, wi_out)
         channel.basic_ack(method.delivery_tag)
+        return True
 
     def report_results(self, channel, workitem):
         """Report task results back to AMQP.
