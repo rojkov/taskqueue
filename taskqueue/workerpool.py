@@ -9,7 +9,7 @@ from multiprocessing import Process
 from taskqueue.daemonlib import Daemon
 from taskqueue.confparser import SECTION_TASKQUEUE
 from taskqueue.confparser import PREFIX_GROUP
-from taskqueue.confparser import OPT_SUBGROUPS, OPT_INSTANCES, OPT_PLUGINS
+from taskqueue.confparser import OPT_SUBGROUPS, OPT_INSTANCES, OPT_WORKERS
 
 LOG = logging.getLogger(__name__)
 
@@ -58,14 +58,14 @@ class WorkerPool(Daemon):
             self.config.add_section(SECTION_TASKQUEUE)
 
         defaults = {
-            OPT_PLUGINS:   '*',
+            OPT_WORKERS:   '*',
             OPT_INSTANCES: '1'
         }
         defaults.update(self.config.items(SECTION_TASKQUEUE))
 
-        if defaults[OPT_PLUGINS] != '*':
+        if defaults[OPT_WORKERS] != '*':
             self._enabled_plugins = \
-                    [plgn.strip() for plgn in defaults[OPT_PLUGINS].split(",")]
+                    [plgn.strip() for plgn in defaults[OPT_WORKERS].split(",")]
 
         group = "worker.plugins"
         for entrypoint in pkg_resources.iter_entry_points(group=group):

@@ -41,9 +41,9 @@ The example below explains all three cases:
 Effective worker settings are available in the attribute :attr:`BaseWorker.settings`.
 
 Currently Taskqueue reserves five option names for its internal use:
-`enabled_plugins`, `results_routing_key`, `user`, `instances` and `subgroups`.
+`workers`, `results_routing_key`, `user`, `instances` and `subgroups`.
 
-enabled_plugins
+workers
     Defines a comma-separated list of worker plugins enabled on the host. By default
     this option contains `*` which means that all installed plugins are enabled.
     This option make sense only in the context of the section `taskqueue`.
