@@ -7,7 +7,7 @@ LOG = logging.getLogger(__name__)
 
 DEFAULT_CONTENT_TYPE = 'application/json'
 
-CONTENT_TYPE_MAP = {
+DEFAULT_CONTENT_TYPE_MAP = {
     'application/json': 'application/x-ruote-workitem',
     'text/plain':       'application/x-basic-workitem'
 }
@@ -15,7 +15,8 @@ CONTENT_TYPE_MAP = {
 class WorkitemError(Exception):
     pass
 
-def get_workitem(amqp_header, amqp_body):
+def get_workitem(amqp_header, amqp_body, ctype_map=None,
+                 default_ctype=DEFAULT_CONTENT_TYPE):
     """Constructs workitems of a certain type."""
     LOG.debug("get_workitem(%s, '%s')" % (amqp_header, amqp_body))
 
@@ -23,10 +24,22 @@ def get_workitem(amqp_header, amqp_body):
         ctype = amqp_header.content_type
     else:
         LOG.warning("header doesn't have Content-type. Assume default '%s'" %
-                    DEFAULT_CONTENT_TYPE)
-        ctype = DEFAULT_CONTENT_TYPE
+                    default_ctype)
+        ctype = default_ctype
 
-    ctype = CONTENT_TYPE_MAP.get(ctype, ctype)
+    if ctype_map is None:
+        ctype_map = DEFAULT_CONTENT_TYPE_MAP
+
+    if isinstance(ctype_map, basestring):
+        try:
+            ctype_map = dict([[token.strip() for token in pair.split('=', 1)]
+                                for pair in ctype_map.split(',')])
+        except ValueError:
+            raise WorkitemError("can't parse content type map '%s'" %
+                                ctype_map)
+        LOG.debug("default content type got overridden with %r" % ctype_map)
+
+    ctype = ctype_map.get(ctype, ctype)
 
     workitem = None
     # look for a Workitem class
