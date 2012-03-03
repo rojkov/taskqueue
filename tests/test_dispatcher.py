@@ -5,14 +5,6 @@ from ConfigParser import SafeConfigParser as ConfigParser
 
 import taskqueue.dispatcher
 
-class TestHandler(unittest.TestCase):
-
-    def test_handle_delivery(self):
-        """Test handle_delivery()."""
-        taskqueue.dispatcher.handle_delivery(Mock(), Mock(), None,
-            '{"fields": {"params": {"worker_type": "first"}}}')
-
-
 class TestDispatcher(unittest.TestCase):
     """Tests for dispatcher."""
 
@@ -22,6 +14,11 @@ class TestDispatcher(unittest.TestCase):
         self.disp.channel = Mock()
         self.disp.connection = Mock()
         taskqueue.dispatcher.pika = Mock()
+
+    def test_handle_delivery(self):
+        """Test handle_delivery()."""
+        self.disp.handle_delivery(Mock(), Mock(), Mock(),
+            '{"fields": {"params": {"worker_type": "first"}}}')
 
     def test_cleanup(self):
         """Test Dispatcher.cleanup()."""

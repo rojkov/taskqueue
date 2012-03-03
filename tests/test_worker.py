@@ -41,12 +41,12 @@ class TestBaseWorker(unittest.TestCase):
     def test_handle_delivery(self):
         """Test BaseWorker.handle_delivery()."""
 
-        self.worker.handle_delivery(Mock(), Mock(), "header", "{}")
+        self.worker.handle_delivery(Mock(), Mock(), Mock(), Mock())
 
     def test_report_results(self):
         """Test BaseWorker.report_results()."""
 
-        self.worker.report_results(Mock(), "{}")
+        self.worker.report_results(Mock(), Mock())
 
     def test_cleanup(self):
         """Test BaseWorker.cleanup()."""
