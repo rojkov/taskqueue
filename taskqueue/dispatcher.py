@@ -23,6 +23,8 @@ class Dispatcher(Daemon):
 
         self.channel = None
         self.connection = None
+        if not config.has_section(SECTION_TASKQUEUE):
+            config.add_section(SECTION_TASKQUEUE)
         super(Dispatcher, self).__init__(config)
 
     def handle_delivery(self, channel, method, header, body):
@@ -56,11 +58,6 @@ class Dispatcher(Daemon):
 
     def run(self):
         """Event cycle."""
-
-        LOG.debug("run!")
-
-        if not self.config.has_section(SECTION_TASKQUEUE):
-            self.config.add_section(SECTION_TASKQUEUE)
 
         LOG.debug("create connection")
         self.connection = pika.BlockingConnection(self.amqp_params)
