@@ -9,11 +9,9 @@ import json
 
 from taskqueue.daemonlib import Daemon
 from taskqueue.workitem import get_workitem, WorkitemError, DEFAULT_CONTENT_TYPE
+from taskqueue.confparser import SECTION_WORKERS
 
 LOG = logging.getLogger(__name__)
-
-# TODO: move the constants to confparser
-SECTION_WORKERS = 'workers'
 
 class Dispatcher(Daemon):
     """Dispatcher daemon"""

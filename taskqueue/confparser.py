@@ -5,6 +5,16 @@ from ConfigParser import SafeConfigParser, NoSectionError
 
 LOG = logging.getLogger(__name__)
 
+SECTION_WORKERS = 'workers'
+
+PREFIX_GROUP = 'worker'
+
+OPT_RESULTS_ROUTING_KEY = "results_routing_key"
+OPT_SUBGROUPS           = 'subgroups'
+OPT_INSTANCES           = 'instances'
+OPT_PLUGINS             = 'enabled_plugins'
+
+
 class ConfigParser(SafeConfigParser):
     """Config parser extended to ignore DEFAULT section."""
 

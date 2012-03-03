@@ -7,17 +7,11 @@ import pkg_resources
 from time import sleep
 from multiprocessing import Process
 from taskqueue.daemonlib import Daemon
+from taskqueue.confparser import SECTION_WORKERS
+from taskqueue.confparser import PREFIX_GROUP
+from taskqueue.confparser import OPT_SUBGROUPS, OPT_INSTANCES, OPT_PLUGINS
 
 LOG = logging.getLogger(__name__)
-
-# TODO: move the constants to confparser
-SECTION_WORKERS = 'workers'
-
-PREFIX_GROUP = 'worker'
-
-OPT_SUBGROUPS = 'subgroups'
-OPT_INSTANCES = 'instances'
-OPT_PLUGINS   = 'enabled_plugins'
 
 class WorkerPool(Daemon):
     """Worker pool manager."""

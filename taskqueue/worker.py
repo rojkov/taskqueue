@@ -15,11 +15,11 @@ import traceback
 
 from pwd import getpwnam
 
+from taskqueue.confparser import OPT_RESULTS_ROUTING_KEY
 from taskqueue.workitem import get_workitem, WorkitemError, DEFAULT_CONTENT_TYPE
 
 LOG = logging.getLogger(__name__)
 
-CFG_KEY_RES_ROUTING = "results_routing_key"
 CFG_DEFAULT_RES_ROUTING = "results"
 
 class BaseWorker(object):
@@ -65,8 +65,8 @@ class BaseWorker(object):
         self.channel.basic_consume(self.handle_delivery, queue=queue)
         signal.signal(signal.SIGTERM, self.cleanup)
         LOG.debug("created new process with props %r" % props)
-        if CFG_KEY_RES_ROUTING in props.keys():
-            self.results_routing_key = props[CFG_KEY_RES_ROUTING]
+        if OPT_RESULTS_ROUTING_KEY in props.keys():
+            self.results_routing_key = props[OPT_RESULTS_ROUTING_KEY]
         self.channel.start_consuming()
 
     def is_acceptable(self, workitem):
