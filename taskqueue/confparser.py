@@ -5,7 +5,7 @@ from ConfigParser import SafeConfigParser, NoSectionError
 
 LOG = logging.getLogger(__name__)
 
-SECTION_WORKERS = 'workers'
+SECTION_TASKQUEUE = 'taskqueue'
 
 PREFIX_GROUP = 'worker'
 

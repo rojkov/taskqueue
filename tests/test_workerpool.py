@@ -63,8 +63,8 @@ class TestWorkerPool(unittest.TestCase):
     def test_run_with_group(self):
         """Test WorkerPool.run() with process group."""
 
-        self.wpool.config.add_section('workers')
-        self.wpool.config.set('workers', 'enabled_plugins', 'first')
+        self.wpool.config.add_section('taskqueue')
+        self.wpool.config.set('taskqueue', 'enabled_plugins', 'first')
         self.wpool.config.add_section('worker_first')
         self.wpool.config.add_section('worker_first_subgroup1')
         self.wpool.config.set('worker_first', 'subgroups', 'subgroup1')

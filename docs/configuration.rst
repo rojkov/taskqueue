@@ -24,7 +24,7 @@ The example below explains all three cases:
     [DEFAULT]
     global_option_name = some value
 
-    [workers]
+    [taskqueue]
     common_option = this value is common for all worker instances
 
     [worker_worker1]
@@ -36,7 +36,7 @@ The example below explains all three cases:
 
     [worker_worker2_group1]
     group1_specific_option = only the instances in group1 of worker2 type will get this option
-    common_option = this overrides the value set in the section workers
+    common_option = this overrides the value set in the section taskqueue
 
 Effective worker settings are available in the attribute :attr:`BaseWorker.settings`.
 
@@ -46,7 +46,7 @@ Currently Taskqueue reserves five option names for its internal use:
 enabled_plugins
     Defines a comma-separated list of worker plugins enabled on the host. By default
     this option contains `*` which means that all installed plugins are enabled.
-    This option make sense only in the context of the section `workers`.
+    This option make sense only in the context of the section `taskqueue`.
 
 results_routing_key
     Ruouting key for results returned by workers. Default value is `results`.

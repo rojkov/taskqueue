@@ -9,7 +9,7 @@ import json
 
 from taskqueue.daemonlib import Daemon
 from taskqueue.workitem import get_workitem, WorkitemError, DEFAULT_CONTENT_TYPE
-from taskqueue.confparser import SECTION_WORKERS
+from taskqueue.confparser import SECTION_TASKQUEUE
 
 LOG = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class Dispatcher(Daemon):
         LOG.debug("Method: %r" % method)
         LOG.debug("Header: %r" % header)
         LOG.debug("Body: %r" % body)
-        settings = dict(self.config.items(SECTION_WORKERS))
+        settings = dict(self.config.items(SECTION_TASKQUEUE))
 
         try:
             workitem = get_workitem(header, body,
@@ -59,8 +59,8 @@ class Dispatcher(Daemon):
 
         LOG.debug("run!")
 
-        if not self.config.has_section(SECTION_WORKERS):
-            self.config.add_section(SECTION_WORKERS)
+        if not self.config.has_section(SECTION_TASKQUEUE):
+            self.config.add_section(SECTION_TASKQUEUE)
 
         LOG.debug("create connection")
         self.connection = pika.BlockingConnection(self.amqp_params)

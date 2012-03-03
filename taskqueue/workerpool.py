@@ -7,7 +7,7 @@ import pkg_resources
 from time import sleep
 from multiprocessing import Process
 from taskqueue.daemonlib import Daemon
-from taskqueue.confparser import SECTION_WORKERS
+from taskqueue.confparser import SECTION_TASKQUEUE
 from taskqueue.confparser import PREFIX_GROUP
 from taskqueue.confparser import OPT_SUBGROUPS, OPT_INSTANCES, OPT_PLUGINS
 
@@ -54,14 +54,14 @@ class WorkerPool(Daemon):
         LOG.debug("WorkerPool.run()")
 
         # use settings from DEFAULT for unconfigured worker plugins
-        if not self.config.has_section(SECTION_WORKERS):
-            self.config.add_section(SECTION_WORKERS)
+        if not self.config.has_section(SECTION_TASKQUEUE):
+            self.config.add_section(SECTION_TASKQUEUE)
 
         defaults = {
             OPT_PLUGINS:   '*',
             OPT_INSTANCES: '1'
         }
-        defaults.update(self.config.items(SECTION_WORKERS))
+        defaults.update(self.config.items(SECTION_TASKQUEUE))
 
         if defaults[OPT_PLUGINS] != '*':
             self._enabled_plugins = \
