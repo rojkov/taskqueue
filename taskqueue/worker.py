@@ -15,7 +15,7 @@ import traceback
 
 from pwd import getpwnam
 
-from taskqueue.workitem import get_workitem, WorkitemError
+from taskqueue.workitem import get_workitem, WorkitemError, DEFAULT_CONTENT_TYPE
 
 LOG = logging.getLogger(__name__)
 
@@ -113,7 +113,11 @@ class BaseWorker(object):
         LOG.debug("Method: %r" % method)
         LOG.debug("Header: %r" % header)
         try:
-            workitem = get_workitem(header, body)
+            workitem = get_workitem(header, body,
+                                    self.settings.get('workitem_type_map',
+                                                      None),
+                                    self.settings.get('default_workitem_type',
+                                                      DEFAULT_CONTENT_TYPE))
         except WorkitemError as err:
             LOG.error("Worker %s.%s can't handle delivery with header '%r' "
                       "and body:\n%s" % (self.__module__,
