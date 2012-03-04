@@ -22,13 +22,15 @@ Taskqueue started as a simpler and easy to manage alternative to
 `BOSS SkyNET`_ thus it provides the following features:
 
  * Code handling a particular type of tasks is installed as a plugin
-   and doesn't require registration.
- * Round robin load balancing.
+   and doesn't require registration;
+ * Round robin load balancing;
  * Crashed workers get restarted without the need of any external tool like
-   `daemontools`_.
+   `daemontools`_;
  * Task queue works as soon as dispatcher and worker pool components
-   get installed.
- * Small and easy to understand code base (~ 700 lines of code).
+   get installed;
+ * Pluggable workitem formats;
+ * Flexible configuration;
+ * Small code base (~ 700 lines of code);
  * 100% code coverage with unit tests.
 
 Design
