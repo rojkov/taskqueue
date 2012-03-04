@@ -98,7 +98,7 @@ key "results" though the key is configurable (i.e. when taskqueue is used with
 Ruote together then the name of the key should be "ruote_workitems").
 
 If you want to disable reporting of results or to modify the way how task
-results are reported or tracked then overload the method `report_results()` of
+results are reported or tracked then override the method `report_results()` of
 your custom `Worker` class::
 
     from taskqueue.worker import BaseWorker
