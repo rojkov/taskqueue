@@ -28,7 +28,7 @@ Taskqueue started as a simpler and easy to manage alternative to
    `daemontools`_.
  * Task queue works as soon as dispatcher and worker pool components
    get installed.
- * Small and easy to understand code base (~ 500 lines of code).
+ * Small and easy to understand code base (~ 700 lines of code).
  * 100% code coverage with unit tests.
 
 Design
@@ -142,12 +142,19 @@ with your own plugins.
 Update AMQP settings in the section `amqp` of the file
 `/etc/taskqueue/config.ini`.
 
-Start the task queue:
+Start the task queue with the commands:
 
 .. code-block:: bash
 
     $ sudo /etc/init.d/python-taskqueue-dispatcher start
     $ sudo /etc/init.d/python-taskqueue-workerpool start
+
+or alternatively:
+
+.. code-block:: bash
+
+    $ dispatcher --foreground --config=testconfig.ini -p /tmp/disp.pid
+    $ worker --foreground --config=testconfig.ini -p /tmp/worker.pid
 
 The packages `python-taskqueue-dispatcher` and `python-taskqueue-workerpool`
 can be installed on different hosts. It's advised to install

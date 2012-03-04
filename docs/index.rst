@@ -12,8 +12,9 @@ Contents:
 
    quickstart
    configuration
-   ruote
    workers
+   workitems
+   ruote
 
 Indices and tables
 ==================

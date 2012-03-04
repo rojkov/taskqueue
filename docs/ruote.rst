@@ -60,7 +60,16 @@ the setting `results_routing_key` to `ruote_workitems`:
     [taskqueue]
     results_routing_key = ruote_workitems
 
-Make sure that some taskqueue dispetchers and workpools are running. Now you
+Also by default `RuoteAMQP::ParticipantProxy` sets the content type of the
+AMQP messages it sends to `application/json` thus you'd better have the
+following map in the section `taskqueue`:
+
+.. code-block:: guess
+
+    [taskqueue]
+    workitem_type_map = application/json=application/x-ruote-workitem
+
+Make sure that some taskqueue dispatchers and workpools are running. Now you
 can submit tasks for processing::
 
     #!/usr/bin/python

@@ -40,8 +40,7 @@ The example below explains all three cases:
 
 Effective worker settings are available in the attribute :attr:`BaseWorker.settings`.
 
-Currently Taskqueue reserves five option names for its internal use:
-`workers`, `results_routing_key`, `user`, `instances` and `subgroups`.
+Taskqueue reserves several option names for its internal use:
 
 workers
     Defines a comma-separated list of worker plugins enabled on the host. By default
@@ -62,6 +61,18 @@ instances
 subgroups
     Introduces a comma-separated list of subgroups of worker processes of the same type.
     Settings for each group are defined in a respective section.
+
+default_workitem_type
+    Sets default type for workitems received by dispatchers or workers in case
+    their content type is not specified explicitly by senders. The default
+    value is `application/json`.
+
+workitem_type_map
+    Overrides the default mapping of workitem content types. By default
+    the type `application/json` maps to `application/x-ruote-workitem` and
+    the type `text/plain` maps to `application/x-basic-workitem`::
+
+        workitem_type_map = application/json=application/x-ruote-workitem,text/plain=application/x-basic-workitem
 
 Logging configuration is described in the manual for python standard library
 `logging`: http://docs.python.org/library/logging.config.html#module-logging.config

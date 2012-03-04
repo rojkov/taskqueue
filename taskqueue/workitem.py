@@ -1,3 +1,37 @@
+"""
+Workitems incapsulate algorithms used to parse bodies of AMQP messages
+received by dispatchers and workers.
+
+Taskqueue comes with two predefined classes for workitems:
+:class:`BasicWorkitem` and :class:`RuoteWorkitem`. The former one exists
+for debugging and demonstration purposes mostly and the latter was developed
+to integrate Taskqueue with Ruote. It is possible to register your own
+workitem class to extract, for example, pickled python objects from
+AMQP message body in the way similar to how Celery does it.
+
+The requirements for a Workitem class are:
+
+    1. the class should implement the following methods:
+
+       - `loads(blob::Blob)` to parse AMQP message bodies,
+       - `dumps()::Blob` to convert workitem's state back to AMQP message body,
+       - `set_error(error::string)` to set error message,
+       - `set_trace(trace::string)` to set traceback,
+       - property `worker_type` to let the dispatcher know where to
+         dispatch the workitem to;
+
+    2. the class needs to be registered as a setuptool resource under the group
+       name `workitems`::
+
+            setup(
+                entry_points={
+                    'workitems': [
+                        'application/x-your-workitem = yourpackage.yourmodule:YourWorkitemClass'
+                    ]
+                }
+            )
+"""
+
 import logging
 import json
 
@@ -5,8 +39,10 @@ from pkg_resources import iter_entry_points
 
 LOG = logging.getLogger(__name__)
 
+#: Default content type
 DEFAULT_CONTENT_TYPE = 'application/json'
 
+#: Default mappings of workitem types
 DEFAULT_CONTENT_TYPE_MAP = {
     'application/json': 'application/x-ruote-workitem',
     'text/plain':       'application/x-basic-workitem'
@@ -17,7 +53,17 @@ class WorkitemError(Exception):
 
 def get_workitem(amqp_header, amqp_body, ctype_map=None,
                  default_ctype=DEFAULT_CONTENT_TYPE):
-    """Constructs workitems of a certain type."""
+    """Constructs workitems of a certain type.
+
+    :param amqp_header: AMQP message header
+    :type amqp_header: pika.frame.Header
+    :param amqp_body: AMQP message body
+    :type amqp_body: blob
+    :param ctype_map: workitem type mapping
+    :type ctype_map: dictionary
+    :param default_ctype: default workitem type
+    :type default_ctype: string
+    """
     LOG.debug("get_workitem(%s, '%s')" % (amqp_header, amqp_body))
 
     if amqp_header.content_type:
@@ -69,6 +115,11 @@ class BasicWorkitemError(WorkitemError):
     pass
 
 class BasicWorkitem(object):
+    """Basic workitem.
+
+    The format of a message body understandable by this class is a simple
+    string: `<worker_type> <the rest of the body>`.
+    """
 
     mime_type = 'application/x-basic-workitem'
 
@@ -106,6 +157,42 @@ class RuoteWorkitemError(WorkitemError):
     pass
 
 class RuoteWorkitem(object):
+    """Ruote workitem.
+
+    This class is used to parse JSON-based Ruote workitems like:
+
+    .. code-block:: guess
+
+        {
+            "re_dispatch_count": 0,
+            "participant_name": "hardworker",
+            "wf_revision": null,
+            "fields": {
+                "repo": "testrepo1",
+                "pkgname": "python-riak",
+                "pkgversion": "1.2.1",
+                "branch": "master2",
+                "workdir": "/home/rozhkov/tmp",
+                "dispatched_at": "2012-03-04 14:00:22.861908 UTC",
+                "params": {
+                    "participant_options": {
+                        "forget": false,
+                        "queue": "taskqueue"
+                    },
+                    "worker_type": "simplebuilder",
+                    "ref": "hardworker"
+                },
+                "user": "vasya"
+            },
+            "wf_name":null,
+            "fei": {
+                "wfid": "20120304-bejeruwodi",
+                "engine_id": "engine",
+                "expid": "0_1_3",
+                "subid": "8079afecd0256e8280b355455ea3435f"
+            }
+        }
+    """
 
     mime_type = 'application/x-ruote-workitem'
 

@@ -5,6 +5,20 @@ All your worker plugins should be derived from it.
 Your custom functionality should be put into the method `handle_task()`.
 And if you want to modify the way how task results are reported or tracked
 then override the method `report_results()` of your worker subclass.
+
+Taskqueue uses the `pkg_resources` library to discover registered
+plugins. So in order to make your plugins visible to your taskqueue
+installation you need to register your worker factories as entry points under
+the group `worker.plugins`::
+
+    setup(
+        entry_points={
+            'worker.plugins': [
+                'customworker = yourpackage.yourmodule:YourWorker.factory'
+            ]
+        }
+    )
+
 """
 
 import logging
@@ -25,6 +39,8 @@ CFG_DEFAULT_RES_ROUTING = "results"
 class BaseWorker(object):
     """Base class for workers."""
 
+    #: Specifies list of workitem types accepted by the worker. By default
+    #: workers accept workitems of any type.
     ACCEPT = ["*/*"]
 
     @classmethod
@@ -70,7 +86,12 @@ class BaseWorker(object):
         self.channel.start_consuming()
 
     def is_acceptable(self, workitem):
-        """Check if received workitem can be handled by worker."""
+        """Check if received workitem can be handled by worker.
+
+        :param workitem: workitem to check
+        :type workitem: Workitem
+        :rtype: boolean
+        """
 
         wtype, subwtype = workitem.mime_type.split('/')
 
@@ -91,9 +112,9 @@ class BaseWorker(object):
         This method is supposed to be overriden in BaseWorker subclasses.
 
         :param workitem: workflow work item
-        :type workitem: dictionary
+        :type workitem: Workitem
         :returns: new state of work item
-        :rtype: dictionary
+        :rtype: Workitem
         """
         raise NotImplementedError
 
@@ -146,7 +167,7 @@ class BaseWorker(object):
         :param channel: AMQP channel
         :type channel: pika.channel.Channel
         :param workitem: workflow work item
-        :type workitem: dictionary
+        :type workitem: Workitem
         """
 
         channel.basic_publish(exchange='',
