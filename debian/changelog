@@ -1,3 +1,9 @@
+taskqueue (0.4.0) unstable; urgency=low
+
+  * Add support for workitems of different formats
+
+ -- Dmitry Rozhkov <dmitry.rojkov@gmail.com>  Sun, 04 Mar 2012 14:21:13 +0000
+
 taskqueue (0.3.0) unstable; urgency=low
 
   * Implement workers namespace in the config file
