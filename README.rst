@@ -89,9 +89,9 @@ plugin::
 
     class Worker(BaseWorker):
 
-        def handle_task(self, body):
+        def handle_task(self, workitem):
             # put meat here
-            return do_something_heavy(body)
+            return do_something_heavy(workitem)
 
 The return value of Worker.handle_task() is sent back to AMQP with the routing
 key "results" though the key is configurable (i.e. when taskqueue is used with
@@ -105,9 +105,9 @@ your custom `Worker` class::
 
     class Worker(BaseWorker):
 
-        def handle_task(self, body):
+        def handle_task(self, workitem):
             # put meat here
-            return do_something_heavy(body)
+            return do_something_heavy(workitem)
 
         def report_results(self, channel, workitem):
             pass
