@@ -65,7 +65,7 @@ def get_workitem(amqp_header, amqp_body, ctype_map=None,
     :param amqp_body: AMQP message body
     :type amqp_body: blob
     :param ctype_map: workitem type mapping
-    :type ctype_map: dictionary
+    :type ctype_map: dictionary|string
     :param default_ctype: default workitem type
     :type default_ctype: string
     """
