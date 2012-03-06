@@ -111,15 +111,8 @@ def get_workitem(amqp_header, amqp_body, ctype_map=None,
                             "the type '%s'" % ctype)
     return workitem
 
-class BasicWorkitemError(WorkitemError):
-    pass
-
-class BasicWorkitem(object):
-    """Basic workitem.
-
-    The format of a message body understandable by this class is a simple
-    string: `<worker_type> <the rest of the body>`.
-    """
+class Workitem(object):
+    """Base abstract class for workitems."""
 
     def __init__(self, mime_type):
         self._body = None
@@ -127,7 +120,34 @@ class BasicWorkitem(object):
         self.mime_type = mime_type
 
     def __repr__(self):
-        return "<BasicWorkitem([worker_type='%s'])>" % self._worker_type
+        return "<%s([worker_type='%s'])>" % (self.__class__.__name__,
+                                             self._worker_type)
+
+    def loads(self, blob):
+        raise NotImplementedError
+
+    def dumps(self):
+        raise NotImplementedError
+
+    @property
+    def worker_type(self):
+        raise NotImplementedError
+
+    def set_error(self, error):
+        raise NotImplementedError
+
+    def set_trace(self, trace):
+        raise NotImplementedError
+
+class BasicWorkitemError(WorkitemError):
+    pass
+
+class BasicWorkitem(Workitem):
+    """Basic workitem.
+
+    The format of a message body understandable by this class is a simple
+    string: `<worker_type> <the rest of the body>`.
+    """
 
     def loads(self, blob):
         try:
@@ -155,7 +175,7 @@ class BasicWorkitem(object):
 class RuoteWorkitemError(WorkitemError):
     pass
 
-class RuoteWorkitem(object):
+class RuoteWorkitem(Workitem):
     """Ruote workitem.
 
     This class is used to parse JSON-based Ruote workitems like:
@@ -192,14 +212,6 @@ class RuoteWorkitem(object):
             }
         }
     """
-
-    def __init__(self, mime_type):
-        self._body = None
-        self._worker_type = None
-        self.mime_type = mime_type
-
-    def __repr__(self):
-        return "<RuoteWorkitem([worker_type='%s'])>" % self._worker_type
 
     def loads(self, blob):
         try:
