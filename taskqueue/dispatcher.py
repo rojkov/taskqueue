@@ -5,7 +5,6 @@ Taskqueue dispatcher daemon
 import sys
 import logging
 import pika
-import json
 
 from taskqueue.daemonlib import Daemon
 from taskqueue.workitem import get_workitem, WorkitemError, DEFAULT_CONTENT_TYPE
