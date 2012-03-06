@@ -1,3 +1,9 @@
+taskqueue (0.4.1) unstable; urgency=low
+
+  * Extract workitem MIME type from resource entry.
+
+ -- Dmitry Rozhkov <dmitry.rojkov@gmail.com>  Tue, 06 Mar 2012 12:56:57 +0000
+
 taskqueue (0.4.0) unstable; urgency=low
 
   * Add support for workitems of different formats

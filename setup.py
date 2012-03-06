@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
     name = "taskqueue",
-    version = "0.4.0",
+    version = "0.4.1",
     author = "Dmitry Rozhkov",
     author_email = "dmitry.rojkov@gmail.com",
     description = ("Simple task queue with round robin load balancing."),
