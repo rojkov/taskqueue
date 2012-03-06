@@ -1,3 +1,6 @@
+"""
+Parser for configuration file.
+"""
 
 import logging
 
