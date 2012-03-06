@@ -13,12 +13,17 @@ The requirements for a Workitem class are:
 
     1. the class should implement the following methods:
 
+       - `__init__(mime_type::string)` setting the attribute :attr:`Workitem.mime_type`
        - `loads(blob::Blob)` to parse AMQP message bodies,
        - `dumps()::Blob` to convert workitem's state back to AMQP message body,
        - `set_error(error::string)` to set error message,
        - `set_trace(trace::string)` to set traceback,
        - property `worker_type` to let the dispatcher know where to
          dispatch the workitem to;
+
+       For your convience there is an abstract class :class:`Workitem` exposing
+       all these methods. You just need to override its abstracts methods in the
+       class inheriting to :class:`Workitem`.
 
     2. the class needs to be registered as a setuptool resource under the group
        name `workitems`::
@@ -115,6 +120,7 @@ class Workitem(object):
     """Base abstract class for workitems."""
 
     def __init__(self, mime_type):
+        """Constructor. Sets MIME type of workitem."""
         self._body = None
         self._worker_type = None
         self.mime_type = mime_type
@@ -124,19 +130,39 @@ class Workitem(object):
                                              self._worker_type)
 
     def loads(self, blob):
+        """Load workitem from given blob.
+
+        This is abstract method.
+        """
         raise NotImplementedError
 
     def dumps(self):
+        """Serialize workitem.
+
+        This is abstract method.
+        """
         raise NotImplementedError
 
     @property
     def worker_type(self):
+        """Return type of worker this workitem was sent to.
+
+        This is abstract method.
+        """
         raise NotImplementedError
 
     def set_error(self, error):
+        """Set worker's error message.
+
+        This is abstract method.
+        """
         raise NotImplementedError
 
     def set_trace(self, trace):
+        """Set worker's traceback.
+
+        This is abstract method.
+        """
         raise NotImplementedError
 
 class BasicWorkitemError(WorkitemError):
