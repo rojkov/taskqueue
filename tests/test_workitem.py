@@ -46,18 +46,18 @@ class TestWorkitem(object):
 class TestBasicWorkitem(TestWorkitem, unittest.TestCase):
 
     def setUp(self):
-        wi = BasicWorkitem()
+        wi = BasicWorkitem('application/x-basic-workitem')
         wi.loads("wtype body")
         self.loaded_wi = wi
-        self.wi = BasicWorkitem()
+        self.wi = BasicWorkitem('application/x-basic-workitem')
 
 class TestRuoteWorkitem(TestWorkitem, unittest.TestCase):
     """Tests for RuoteWorkitems."""
 
     def setUp(self):
-        self.wi = RuoteWorkitem()
+        self.wi = RuoteWorkitem('application/x-ruote-workitem')
 
-        wi = RuoteWorkitem()
+        wi = RuoteWorkitem('application/x-ruote-workitem')
         wi.loads('{"fields": {"params": {"worker_type": "test"}}, "fei": {}}')
         self.loaded_wi = wi
 

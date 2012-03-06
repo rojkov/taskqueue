@@ -93,7 +93,7 @@ def get_workitem(amqp_header, amqp_body, ctype_map=None,
         LOG.debug("found %r" % entry)
         try:
             cls = entry.load()
-            workitem = cls()
+            workitem = cls(entry.name)
             workitem.loads(amqp_body)
             break
         except ImportError:
@@ -121,11 +121,10 @@ class BasicWorkitem(object):
     string: `<worker_type> <the rest of the body>`.
     """
 
-    mime_type = 'application/x-basic-workitem'
-
-    def __init__(self):
+    def __init__(self, mime_type):
         self._body = None
         self._worker_type = None
+        self.mime_type = mime_type
 
     def __repr__(self):
         return "<BasicWorkitem([worker_type='%s'])>" % self._worker_type
@@ -194,11 +193,10 @@ class RuoteWorkitem(object):
         }
     """
 
-    mime_type = 'application/x-ruote-workitem'
-
-    def __init__(self):
+    def __init__(self, mime_type):
         self._body = None
         self._worker_type = None
+        self.mime_type = mime_type
 
     def __repr__(self):
         return "<RuoteWorkitem([worker_type='%s'])>" % self._worker_type

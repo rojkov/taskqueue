@@ -26,7 +26,7 @@ class TestBaseWorker(unittest.TestCase):
 
     def test_is_acceptable(self):
         """Test BaseWorker.is_acceptable()."""
-        wi = BasicWorkitem()
+        wi = BasicWorkitem('application/x-basic-workitem')
         self.assertTrue(self.worker.is_acceptable(wi))
 
         self.worker.ACCEPT = ['application/x-basic-workitem']
