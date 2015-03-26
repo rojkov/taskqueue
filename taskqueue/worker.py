@@ -174,7 +174,8 @@ class BaseWorker(object):
                               routing_key=self.results_routing_key,
                               body=workitem.dumps(),
                               properties=pika.BasicProperties(
-                                  delivery_mode=2
+                                  delivery_mode=2,
+                                  content_type=workitem.mime_type
                               ))
 
     def cleanup(self, signum, frame):
