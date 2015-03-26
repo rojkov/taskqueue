@@ -127,7 +127,7 @@ class Workitem(object):
 
     def __repr__(self):
         return "<%s([worker_type='%s'])>" % (self.__class__.__name__,
-                                             self._worker_type)
+                                             self.worker_type)
 
     def loads(self, blob):
         """Load workitem from given blob.
@@ -145,11 +145,16 @@ class Workitem(object):
 
     @property
     def worker_type(self):
-        """Return type of worker this workitem was sent to.
+        """Return type of worker this workitem was sent to."""
 
-        This is abstract method.
-        """
-        raise NotImplementedError
+        if self._worker_type is None:
+            raise WorkitemError("Workitem hasn't been loaded")
+        return self._worker_type
+
+    @worker_type.setter
+    def worker_type(self, wtype):
+        """Setter for worker_type."""
+        self._worker_type = wtype
 
     def set_error(self, error):
         """Set worker's error message.
