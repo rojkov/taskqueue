@@ -98,8 +98,9 @@ def get_workitem(amqp_header, amqp_body, ctype_map=None,
         LOG.debug("found %r" % entry)
         try:
             cls = entry.load()
-            workitem = cls(entry.name)
-            workitem.loads(amqp_body)
+            workitem = cls.loads(amqp_body)
+            assert workitem.mime_type == entry.name
+            LOG.debug("loaded %r", workitem)
             break
         except ImportError:
             LOG.info("plugin '%s' is not installed. skipping..." %
@@ -119,11 +120,12 @@ def get_workitem(amqp_header, amqp_body, ctype_map=None,
 class Workitem(object):
     """Base abstract class for workitems."""
 
-    def __init__(self, mime_type):
-        """Constructor. Sets MIME type of workitem."""
+    mime_type = 'application/x-abstract-workitem'
+
+    def __init__(self):
+        """Constructor."""
         self._body = None
         self._worker_type = None
-        self.mime_type = mime_type
 
     def __repr__(self):
         return "<%s([worker_type='%s'])>" % (self.__class__.__name__,
@@ -179,6 +181,8 @@ class BasicWorkitem(Workitem):
     The format of a message body understandable by this class is a simple
     string: `<worker_type> <the rest of the body>`.
     """
+
+    mime_type = 'application/x-basic-workitem'
 
     def loads(self, blob):
         try:
@@ -243,6 +247,8 @@ class RuoteWorkitem(Workitem):
             }
         }
     """
+
+    mime_type = 'application/x-ruote-workitem'
 
     def loads(self, blob):
         try:

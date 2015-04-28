@@ -25,6 +25,7 @@ import logging
 import pika
 import signal
 import os
+import sys
 import traceback
 
 from pwd import getpwnam
@@ -35,6 +36,19 @@ from taskqueue.workitem import get_workitem, WorkitemError, DEFAULT_CONTENT_TYPE
 LOG = logging.getLogger(__name__)
 
 CFG_DEFAULT_RES_ROUTING = "results"
+
+def log_trace(func):
+    """Log traceback before raising exception."""
+    def new_func(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except:
+            exc_type, exc_value, tb = sys.exc_info()
+            for line in traceback.format_tb(tb):
+                LOG.error(line.strip())
+            LOG.error("%s: %s" % (exc_type, exc_value))
+            raise
+    return new_func
 
 class BaseWorker(object):
     """Base class for workers."""
@@ -56,6 +70,7 @@ class BaseWorker(object):
         self.results_routing_key = CFG_DEFAULT_RES_ROUTING
         self.settings = {}
 
+    @log_trace
     def __call__(self, props, conn_params, queue):
         """Worker process entry point."""
 
@@ -118,6 +133,7 @@ class BaseWorker(object):
         """
         raise NotImplementedError
 
+    @log_trace
     def handle_delivery(self, channel, method, header, body):
         """Handle AMQP message.
 
